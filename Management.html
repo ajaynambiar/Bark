@@ -202,6 +202,7 @@
     .sidebar-nav .nav-item.active {
       background: var(--color-primary-bg);
       color: var(--color-primary);
+      box-shadow: inset 3px 0 0 var(--color-primary);
     }
     
     .sidebar-nav .nav-item .icon {
@@ -648,6 +649,58 @@
       background: var(--color-error-bg);
       color: var(--color-error);
     }
+
+    /* ===== FEATURE CSS (Booking Tracker / Preset Notes / Command Palette) ===== */
+    /* ===== BOOKING TRACKER ===== */
+    .booking-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .booking-grid { grid-template-columns: 1fr; } }
+    .feedback-success { background: var(--color-success-bg); color: #166534; border: 1px solid var(--color-success); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .feedback-error { background: var(--color-error-bg); color: var(--color-error); border: 1px solid var(--color-error); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    [data-theme="dark"] .feedback-success { color: #4ade80; }
+    .recent-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--border-light); border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; font-size: 13px; }
+    .apt-id { font-weight: 700; color: var(--color-success); font-family: monospace; }
+    .count-pill { background: var(--color-primary-bg); color: var(--color-primary); font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 9999px; }
+    .ring-progress { transition: stroke-dashoffset 0.8s ease; }
+    .target-card { border: 2px solid var(--border-light); border-radius: 12px; padding: 14px 16px; }
+    .target-card.status-green { border-color: var(--color-success); }
+    .target-card.status-amber { border-color: var(--color-warning); }
+    .target-card.status-red { border-color: var(--color-error); }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .page-btn { border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px; }
+    .page-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* ===== PRESET NOTES ===== */
+    .chip-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+    .chip { flex-shrink: 0; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-secondary); border-radius: 9999px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .chip:hover { background: var(--bg-hover); }
+    .chip.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 768px) { .notes-grid { grid-template-columns: 1fr; } }
+    .note-card { border: 1px solid var(--border-light); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: box-shadow 0.2s ease, transform 0.2s ease; background: var(--bg-card); }
+    .note-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .cat-badge { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: var(--color-info-bg); color: var(--color-info); }
+    .placeholder-modal { position: fixed; z-index: 9999; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 16px; width: 320px; max-height: 70vh; overflow-y: auto; }
+
+    /* ===== COMMAND PALETTE SEARCH ===== */
+    .cmd-input { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 10px; padding: 7px 12px; font-size: 13px; width: 300px; outline: none; transition: all 0.2s ease; }
+    .cmd-input::placeholder { color: rgba(255,255,255,0.55); }
+    .cmd-input:focus { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.45); }
+    .cmd-panel { position: absolute; top: calc(100% + 6px); right: 0; width: 460px; max-width: 92vw; max-height: 500px; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; box-shadow: var(--shadow-lg); z-index: 1000; }
+    .cmd-group-header { position: sticky; top: 0; background: var(--bg-table-header); padding: 6px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid var(--border-light); z-index: 1; }
+    .cmd-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 14px; cursor: pointer; border-left: 3px solid transparent; font-size: 13px; }
+    .cmd-row:hover, .cmd-row.highlighted { background: var(--color-primary-bg); border-left-color: var(--color-primary); }
+    .cmd-action { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 6px; opacity: 0.75; }
+    .cmd-action:hover { opacity: 1; background: var(--bg-hover); }
+
+    /* ===== CONFETTI ===== */
+    .confetti-piece { position: fixed; top: -30px; z-index: 10000; font-size: 20px; user-select: none; pointer-events: none; animation: confetti-fall linear forwards; }
+    @keyframes confetti-fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.7; } }
+    @media (prefers-reduced-motion: reduce) { .confetti-piece { animation-duration: 0.01s !important; } }
+    @media (max-width: 768px) { .cmd-input { width: 160px; } }
+    .input-base { width: 100%; border: 1px solid var(--border-medium); border-radius: 10px; padding: 9px 12px; font-size: 14px; outline: none; transition: border-color .15s ease; background: var(--bg-input); color: var(--text-primary); }
+    .input-base:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(15,81,50,.12); }
+    .field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -676,14 +729,31 @@
         <span class="badge" id="totalBadge">0</span>
       </a>
       
-      <div class="nav-label" style="margin-top:12px;">Management</div>
-      
+      <div class="nav-label" style="margin-top:12px;">Main</div>
+
       <a class="nav-item" data-page="issues" onclick="switchPage('issues')">
         <span class="icon">🐛</span>
-        <span>All Issues</span>
+        <span>Issues</span>
         <span class="badge warning" id="openBadge">0</span>
       </a>
-      
+
+      <a class="nav-item" data-page="bookings" onclick="switchPage('bookings')">
+        <span class="icon">🎫</span>
+        <span>Booking Tracker</span>
+      </a>
+
+      <a class="nav-item" data-page="notes" onclick="switchPage('notes')">
+        <span class="icon">📋</span>
+        <span>Preset Notes</span>
+      </a>
+
+      <a class="nav-item" data-page="pending" onclick="switchPage('pending')">
+        <span class="icon">⏳</span>
+        <span>Pending Tickets</span>
+      </a>
+
+      <div class="nav-label" style="margin-top:12px;">Management</div>
+
       <a class="nav-item" data-page="sla" onclick="switchPage('sla')">
         <span class="icon">📈</span>
         <span>SLA Dashboard</span>
@@ -754,7 +824,9 @@
         <button class="hamburger" onclick="toggleSidebar()">☰</button>
         <span style="color:white; font-weight:600; font-size:16px;" id="pageTitle">📊 Dashboard</span>
       </div>
-      <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px; position:relative;" id="cmdSearchWrap">
+        <input type="text" id="cmdSearchInput" class="cmd-input" placeholder="🔍 Search tickets, bookings, notes... (Ctrl+K)" autocomplete="off">
+        <div id="cmdSearchPanel" class="cmd-panel" style="display:none;"></div>
         <span class="live-dot"></span>
         <span style="color:#a7d7bf; font-size:12px;">Live · Google Sheet</span>
         <button id="shortcutsHelpBtn" style="background:rgba(255,255,255,0.1); border:none; color:white; padding:4px 10px; border-radius:8px; cursor:pointer; font-size:14px;">⌨️</button>
@@ -901,6 +973,88 @@
     </div>
 
     <!-- ===== PAGE: SLA DASHBOARD ===== -->
+
+    <!-- ===== PAGE: BOOKING TRACKER (Feature 1) ===== -->
+    <div id="page-bookings" class="page-content">
+      <div class="booking-grid">
+        <!-- LEFT: Log a Booking -->
+        <div class="card">
+          <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📝 Log a Booking</h2>
+          <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Paste the Appointment ID and press Enter</p>
+          <div style="margin-bottom:8px;">
+            <label class="field-label">YOUR NAME</label>
+            <select id="bookingAgent" class="input-base" style="margin-top:6px;"><option value="">Select your name...</option></select>
+          </div>
+          <input id="aptIdInput" type="text" class="input-base" placeholder="Paste Appointment ID..." autofocus
+                 style="margin-top:6px; margin-bottom:12px; font-size:20px !important; padding:14px !important; font-family:monospace;" autocomplete="off">
+          <button id="logBookingBtn" style="width:100%; background:var(--color-primary); color:white; font-weight:600; border:none; border-radius:12px; padding:12px; font-size:15px; cursor:pointer;">🎫 Log Booking</button>
+          <div id="bookingFeedback" style="margin-top:12px;"></div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:20px; margin-bottom:10px;">
+            <h3 style="font-size:15px; font-weight:700; color:var(--text-primary);">Recent Bookings (Today)</h3>
+            <span class="count-pill" id="todayCountPill">0</span>
+          </div>
+          <div id="recentBookingsList"></div>
+          <div id="recentBookingsEmpty" style="font-size:13px; color:var(--text-muted); padding:8px 0;">No bookings yet today</div>
+          <a href="javascript:void(0)" onclick="openAllBookingsModal()" style="display:inline-block; margin-top:10px; color:var(--color-primary); font-weight:600; font-size:13px; text-decoration:none;">View All →</a>
+        </div>
+
+        <!-- RIGHT: My Performance -->
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📊 My Performance</h2>
+            <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Month-to-date progress</p>
+            <div style="position:relative; width:180px; height:180px; margin:0 auto 16px;">
+              <svg width="180" height="180" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r="75" fill="none" stroke="var(--border-light)" stroke-width="12"></circle>
+                <circle id="ringProgress" class="ring-progress" cx="90" cy="90" r="75" fill="none" stroke="var(--color-primary)" stroke-width="12"
+                        stroke-linecap="round" transform="rotate(-90 90 90)" stroke-dasharray="471.24" stroke-dashoffset="471.24"></circle>
+              </svg>
+              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div id="ringMtd" style="font-size:36px; font-weight:700; color:var(--text-primary); line-height:1;">0</div>
+                <div id="ringTarget" style="font-size:13px; color:var(--text-secondary);">/ target</div>
+                <div id="ringPercent" style="font-size:14px; font-weight:700; color:var(--color-primary);">0%</div>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border-light); border-radius:12px; padding:4px 14px; margin-bottom:14px;">
+              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border-light); font-size:13px;">
+                <span>📅 Today</span><strong id="statToday">0</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border-light); font-size:13px;">
+                <span>📆 This Week</span><strong id="statWeek">0</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0; font-size:13px;">
+                <span>📊 Month-to-Date</span><strong id="statMtd">0</strong>
+              </div>
+            </div>
+            <div id="targetCard" class="target-card status-red" style="margin-bottom:14px;">
+              <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">🎯 TARGET</div>
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;"><span>Monthly goal</span><strong id="tgtGoal">—</strong></div>
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;"><span>Remaining</span><strong id="tgtRemaining">—</strong></div>
+              <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Daily pace needed</span><strong id="tgtPace">—</strong></div>
+            </div>
+            <div class="target-card" style="border-color:var(--border-light);">
+              <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">🏆 Team Rank</div>
+              <div id="rankValue" style="font-size:20px; font-weight:700; color:var(--text-primary);">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: PRESET NOTES (Feature 2) ===== -->
+    <div id="page-notes" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📋 Preset Notes</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Copy-ready response notes — click a card to copy instantly.</p>
+        <input id="notesSearch" type="text" class="input-base" placeholder="🔍 Search notes..." style="margin-bottom:12px;" autocomplete="off">
+        <div id="noteChips" class="chip-scroll" style="margin-bottom:16px;"></div>
+        <div id="notesGrid" class="notes-grid"></div>
+        <div id="notesEmpty" style="display:none; text-align:center; color:var(--text-muted); padding:24px 0; font-size:13px;">No notes match your search.</div>
+      </div>
+    </div>
+
+    </div>
     <div id="page-sla" class="page-content">
       <div class="card">
         <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📈 SLA Dashboard</h2>
@@ -1155,6 +1309,8 @@
     var titles = {
       'dashboard': '📊 Dashboard',
       'issues': '🐛 All Issues',
+      'bookings': '🎫 Booking Tracker',
+      'notes': '📋 Preset Notes',
       'sla': '📈 SLA Dashboard',
       'team': '👥 Team Performance',
       'suggestions': '💡 Suggestions',
@@ -1171,6 +1327,8 @@
       toggleSidebar();
     }
     
+    if (page === 'bookings') refreshBookingData();
+    if (page === 'notes') loadPresetNotes();
     if (page === 'suggestions') loadSuggestions();
     if (page === 'contacts') loadContacts();
     if (page === 'config') loadConfig();
@@ -2179,6 +2337,1716 @@
   // ============================================================
   // INITIALIZATION
   // ============================================================
+
+  </script>
+
+  <!-- ===== STRAY-DUPLICATE BLOCK REMOVED (Index-only pages) ===== -->
+
+<script>
+  // ============================================================
+  // CONFIGURATION
+  // ============================================================
+  var CONFIG = null;
+  var state = {
+    tool: null,
+    channelOrClinic: null,
+    serviceOrQueue: null,
+    issueSubtype: null,
+    attachment: null
+  };
+  var issueTomSelects = [];
+  var DRAFT_KEY = 'clinicIssueLog_draft';
+  var RECENT_KEY = 'clinicIssueLog_recent';
+  var THEME_KEY = 'clinicIssueLog_theme';
+  var allTickets = [];
+  var allSuggestions = [];
+  var allContacts = [];
+  var allServices = [];
+  var allDiscounts = [];
+  var allCalendarEvents = [];
+
+  // ============================================================
+  // THEME MANAGEMENT
+  // ============================================================
+  function getCurrentTheme() {
+    return localStorage.getItem(THEME_KEY) || 'light';
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+    updateThemeUI(theme);
+  }
+
+  function toggleTheme() {
+    var current = getCurrentTheme();
+    var next = current === 'light' ? 'dark' : 'light';
+    setTheme(next);
+  }
+
+  function updateThemeUI(theme) {
+    var toggle = document.getElementById('themeToggle');
+    var icon = document.getElementById('themeIcon');
+    if (toggle) {
+      toggle.classList.toggle('active', theme === 'dark');
+    }
+    if (icon) {
+      icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+  }
+
+  function getSystemPreference() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  // ============================================================
+  // EXPOSE HANDLERS FOR INLINE ONCLICK ATTRIBUTES
+  // ============================================================
+  window.handleLogBooking = handleLogBooking;
+  window.refreshBookingData = refreshBookingData;
+  window.openAllBookingsModal = openAllBookingsModal;
+  window.closeAllBookingsModal = closeAllBookingsModal;
+  window.loadAllBookings = loadAllBookings;
+  window.gotoBookingsPage = gotoBookingsPage;
+  window.handleNoteCopy = handleNoteCopy;
+  window.renderNotesGrid = renderNotesGrid;
+  window.copyToClipboard = copyToClipboard;
+  window.cmdPickRecent = cmdPickRecent;
+  window.switchPage = switchPage;
+  window.toggleSidebar = toggleSidebar;
+  window.toggleTheme = toggleTheme;
+
+  // ============================================================
+  // SIDEBAR NAVIGATION
+  // ============================================================
+  var currentPage = 'issues';
+
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+
+  function switchPage(page) {
+    document.querySelectorAll('.page-content').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    
+    var target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(el) {
+      el.classList.remove('active');
+      if (el.dataset.page === page) el.classList.add('active');
+    });
+    
+    var titles = {
+      'issues': '🐛 Issues',
+      'bookings': '🎫 Booking Tracker',
+      'notes': '📋 Preset Notes',
+      'pending': '⏳ Pending Tickets',
+      'services': '🏷️ Services & Discounts',
+      'contacts': '📞 Point of Contacts',
+      'calendar': '📅 Calendar',
+      'suggestions': '💡 Suggestions'
+    };
+    document.getElementById('pageTitle').textContent = titles[page] || 'Issues';
+    
+    currentPage = page;
+
+    // Lazy-load feature data when a page is opened
+    if (page === 'bookings') refreshBookingData();
+    if (page === 'notes') loadPresetNotes();
+
+    if (window.innerWidth <= 768) {
+      toggleSidebar();
+    }
+  }
+
+  // ============================================================
+  // TOAST & ERROR HANDLING
+  // ============================================================
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    var inner = document.getElementById('toastInner');
+    if (!toast || !inner) return;
+    inner.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function() { toast.classList.remove('show'); }, 4000);
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('errorBanner');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideError() {
+    var el = document.getElementById('errorBanner');
+    if (el) el.classList.add('hidden');
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, function(m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  function timeAgo(isoTimestamp) {
+    try {
+      var diffMs = Date.now() - new Date(isoTimestamp).getTime();
+      if (isNaN(diffMs)) return 'unknown';
+      var mins = Math.round(diffMs / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hrs = Math.round(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      return Math.round(hrs / 24) + 'd ago';
+    } catch(e) {
+      return 'unknown';
+    }
+  }
+
+  // ============================================================
+  // SHORTCUTS HELP
+  // ============================================================
+  function bindShortcutsHelp() {
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        var submitBtn = document.getElementById('submitBtn');
+        if (submitBtn && !submitBtn.disabled) {
+          e.preventDefault();
+          submitBtn.click();
+        }
+      }
+      if (e.key === 'Escape') {
+        var modal = document.getElementById('shortcutsModal');
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.add('hidden');
+          modal.style.display = 'none';
+        }
+        hideError();
+      }
+      if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!e.target.matches('input, textarea, select')) {
+          switchPage('issues');
+        }
+      }
+      if (e.key === 'd' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!e.target.matches('input, textarea, select')) {
+          window.location.href = '?page=management';
+        }
+      }
+    });
+
+    document.getElementById('shortcutsHelpBtn').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    });
+    
+    document.getElementById('closeShortcutsModal').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    
+    document.getElementById('closeShortcutsModalBtn').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    
+    document.getElementById('shortcutsModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        this.style.display = 'none';
+      }
+    });
+  }
+
+  // ============================================================
+  // DRAFT PERSISTENCE
+  // ============================================================
+  function saveDraft() {
+    try {
+      var draft = {
+        ticketId: document.getElementById('ticketId').value || '',
+        phone: document.getElementById('phone').value || '',
+        agentName: document.getElementById('agentName').value || '',
+        tool: state.tool
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch(e) {}
+  }
+
+  function restoreDraft() {
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      var draft = JSON.parse(raw);
+      if (draft.ticketId) document.getElementById('ticketId').value = draft.ticketId;
+      if (draft.phone) document.getElementById('phone').value = draft.phone;
+      if (draft.agentName) document.getElementById('agentName').value = draft.agentName;
+      if (draft.tool) selectTool(draft.tool);
+    } catch(e) {}
+  }
+
+  // ============================================================
+  // RECENT SUBMISSIONS
+  // ============================================================
+  function addToRecent(entry) {
+    try {
+      var list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+      list.unshift(entry);
+      list = list.slice(0, 5);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+      renderRecentList();
+    } catch(e) {}
+  }
+
+  function renderRecentList() {
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch(e) {}
+    var container = document.getElementById('recentList');
+    var empty = document.getElementById('recentEmpty');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!list.length) {
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    list.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'flex items-center justify-between text-[13px] border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2';
+      row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:8px 12px;';
+      row.innerHTML =
+        '<div style="display:flex; align-items:center; gap:8px;"><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(item.ticketId || '') + '</span>' +
+        '<span style="color:var(--text-muted);">·</span><span style="color:var(--text-secondary);">' + escapeHtml(item.tool || '') + '</span></div>' +
+        '<span style="font-size:11px; font-weight:500; padding:2px 10px; border-radius:9999px; background:var(--color-primary-bg); color:var(--color-primary);">Logged</span>';
+      container.appendChild(row);
+    });
+  }
+
+  // ============================================================
+  // ATTACHMENT HANDLING
+  // ============================================================
+  function setupDropZone() {
+    var dropZone = document.getElementById('dropZone');
+    var fileInput = document.getElementById('fileInput');
+    if (!dropZone || !fileInput) return;
+
+    dropZone.addEventListener('click', function(e) {
+      if (e.target.id === 'removeFileBtn') return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+
+    document.addEventListener('paste', function(e) {
+      var items = (e.clipboardData || window.clipboardData).items;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          handleFile(blob, 'pasted-screenshot.png');
+          break;
+        }
+      }
+    });
+
+    var removeBtn = document.getElementById('removeFileBtn');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        clearFile();
+      });
+    }
+  }
+
+  function handleFile(file, forcedName) {
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      showError('File is larger than 20MB. Please attach a smaller file.');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function() {
+      state.attachment = {
+        base64: reader.result,
+        mimeType: file.type || 'application/octet-stream',
+        filename: forcedName || file.name || 'attachment'
+      };
+      var fileNameEl = document.getElementById('fileName');
+      if (fileNameEl) fileNameEl.textContent = state.attachment.filename;
+      var dropEmpty = document.getElementById('dropZoneEmpty');
+      var dropFile = document.getElementById('dropZoneFile');
+      if (dropEmpty) dropEmpty.classList.add('hidden');
+      if (dropFile) {
+        dropFile.classList.remove('hidden');
+        dropFile.style.display = 'flex';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearFile() {
+    state.attachment = null;
+    var fileInput = document.getElementById('fileInput');
+    if (fileInput) fileInput.value = '';
+    var dropEmpty = document.getElementById('dropZoneEmpty');
+    var dropFile = document.getElementById('dropZoneFile');
+    if (dropEmpty) dropEmpty.classList.remove('hidden');
+    if (dropFile) {
+      dropFile.classList.add('hidden');
+      dropFile.style.display = 'none';
+    }
+  }
+
+  // ============================================================
+  // TOMSELECT HELPERS
+  // ============================================================
+  function destroyIssueTomSelects() {
+    issueTomSelects.forEach(function(ts) {
+      try { if (ts && ts.destroy) ts.destroy(); } catch(e) {}
+    });
+    issueTomSelects = [];
+  }
+
+  function mountTomSelect(selectEl, placeholder) {
+    if (!selectEl) return null;
+    if (selectEl.tomselect) {
+      try { if (selectEl.tomselect.destroy) selectEl.tomselect.destroy(); } catch(e) {}
+    }
+    try {
+      var ts = new TomSelect(selectEl, {
+        create: false,
+        allowEmptyOption: true,
+        placeholder: placeholder || 'Select...',
+        onChange: function(val) {
+          state.issueSubtype = val || null;
+          saveDraft();
+        }
+      });
+      issueTomSelects.push(ts);
+      return ts;
+    } catch(e) {
+      console.error('Error creating TomSelect:', e);
+      return null;
+    }
+  }
+
+  function issueOptionsHtml(list, placeholder) {
+    var html = '<option value="">' + placeholder + '</option>';
+    (list || []).forEach(function(item) {
+      html += '<option value="' + escapeHtml(item) + '">' + escapeHtml(item) + '</option>';
+    });
+    return html;
+  }
+
+  // ============================================================
+  // TOOL SELECTION
+  // ============================================================
+  function selectTool(toolId) {
+    state.tool = toolId;
+    state.channelOrClinic = null;
+    state.serviceOrQueue = null;
+    state.issueSubtype = null;
+
+    document.querySelectorAll('#toolGrid .tool-card').forEach(function(card) {
+      card.classList.toggle('selected', card.dataset.toolId === toolId);
+    });
+
+    renderSubFields();
+    updateSlaBanner();
+    saveDraft();
+  }
+
+  // ============================================================
+  // SLA BANNER
+  // ============================================================
+  function computeSla(toolId, isEscalation) {
+    if (!toolId) {
+      return { text: 'Select a tool to see SLA target', color: 'var(--text-muted)' };
+    }
+    if (!isEscalation) {
+      return { text: 'Standard logging protocol (Target SLA: 24h)', color: 'var(--text-secondary)' };
+    }
+    if (toolId === 'ClinicOps') {
+      return { text: 'Priority: P1 - Target SLA: 30 Mins', color: '#dc2626' };
+    }
+    if (toolId === 'PawCare' || toolId === 'Ameyo') {
+      return { text: 'Priority: P2 - Target SLA: 1 Hour', color: '#ea580c' };
+    }
+    return { text: 'Priority: P3 - Target SLA: 2 Hours', color: '#ca8a04' };
+  }
+
+  function updateSlaBanner() {
+    var isEscalation = document.getElementById('isEscalation').checked;
+    var sla = computeSla(state.tool, isEscalation);
+    var banner = document.getElementById('slaBanner');
+    banner.textContent = sla.text;
+    banner.style.color = sla.color;
+  }
+
+  // ============================================================
+  // SUB-FIELDS RENDERING
+  // ============================================================
+  function renderSubFields() {
+    destroyIssueTomSelects();
+    var container = document.getElementById('subFieldsContainer');
+    container.innerHTML = '';
+    if (!state.tool || !CONFIG) return;
+
+    try {
+      if (state.tool === 'Nugget' || state.tool === 'Ameyo') {
+        var issues = CONFIG.issues && CONFIG.issues[state.tool] ? CONFIG.issues[state.tool] : [];
+        container.innerHTML = '<div><label class="field-label">WHAT WENT WRONG? <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;">' + issueOptionsHtml(issues, 'Select an issue...') + '</select></div>';
+        mountTomSelect(document.getElementById('issueSelect'), 'Select an issue...');
+        return;
+      }
+
+      if (state.tool === 'PawCare') {
+        var pawCareChannels = CONFIG.channels && CONFIG.channels['PawCare'] ? CONFIG.channels['PawCare'] : [];
+        var opts = '<option value="">Select...</option>';
+        (pawCareChannels || []).forEach(function(c) {
+          opts += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        });
+        container.innerHTML = '<div style="display:flex; flex-direction:column; gap:12px;">' +
+          '<div><label class="field-label">MODULE / FEATURE <span class="badge-req">Required</span></label>' +
+          '<select id="firstLevelSelect" class="input-base" style="margin-top:6px;">' + opts + '</select></div>' +
+          '<div><label class="field-label">ISSUE <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;" disabled>' + issueOptionsHtml([], 'Select above first...') + '</select></div></div>';
+        bindChannelThenIssue('PawCare');
+        return;
+      }
+
+      if (state.tool === 'Ticket') {
+        var ticketChannels = CONFIG.channels && CONFIG.channels['Ticket'] ? CONFIG.channels['Ticket'] : [];
+        var pills = (ticketChannels || []).map(function(c) {
+          return '<button type="button" class="pill-btn" data-channel="' + escapeHtml(c) + '">' + escapeHtml(c) + '</button>';
+        }).join('');
+        container.innerHTML = '<div class="section-divider" style="display:flex; flex-direction:column; gap:12px;">' +
+          '<div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Ticket Details</div>' +
+          '<div><label class="field-label">CHANNEL / QUEUE <span class="badge-req">Required</span></label>' +
+          '<div id="channelPills" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">' + pills + '</div></div>' +
+          '<div><label class="field-label">TICKET ISSUE <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;" disabled>' + issueOptionsHtml([], 'Select channel first...') + '</select></div></div>';
+        bindTicketBlock();
+        return;
+      }
+
+      if (state.tool === 'ClinicOps') {
+        var clinics = CONFIG.clinics || [];
+        var clinicOpts = '<option value="">Select clinic...</option>';
+        (clinics || []).forEach(function(c) {
+          clinicOpts += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        });
+        container.innerHTML = '<div class="section-divider" style="display:flex; flex-direction:column; gap:12px;">' +
+          '<div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Clinic Operations</div>' +
+          '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">' +
+          '<div><label class="field-label">CLINIC <span class="badge-req">Required</span></label>' +
+          '<select id="clinicSelect" class="input-base" style="margin-top:6px;">' + clinicOpts + '</select></div>' +
+          '<div><label class="field-label">SERVICE <span class="badge-req">Required</span></label>' +
+          '<select id="serviceSelect" class="input-base" style="margin-top:6px;" disabled><option value="">Select clinic first...</option></select></div>' +
+          '<div><label class="field-label">ISSUE <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;" disabled>' + issueOptionsHtml([], 'Select service first...') + '</select></div></div></div>';
+        bindClinicOpsBlock();
+        return;
+      }
+    } catch(e) {
+      console.error('Error rendering subfields:', e);
+      container.innerHTML = '<div style="color:var(--color-error);">Error loading form fields. Please refresh.</div>';
+    }
+  }
+
+  function bindChannelThenIssue(toolId) {
+    var firstSelect = document.getElementById('firstLevelSelect');
+    var issueSelect = document.getElementById('issueSelect');
+    if (!firstSelect || !issueSelect) return;
+
+    var ts = mountTomSelect(issueSelect, 'Select above first...');
+    if (ts) ts.disable();
+
+    firstSelect.addEventListener('change', function() {
+      state.channelOrClinic = firstSelect.value || null;
+      state.issueSubtype = null;
+      var pathKey = toolId + '|' + firstSelect.value;
+      var issues = (CONFIG.issues && CONFIG.issues[pathKey]) ? CONFIG.issues[pathKey] : [];
+      if (ts) {
+        ts.clearOptions();
+        ts.addOption({ value: '', text: 'Select an issue...' });
+        issues.forEach(function(issue) { ts.addOption({ value: issue, text: issue }); });
+        ts.refreshOptions(false);
+        if (firstSelect.value) { ts.enable(); ts.setValue('', true); }
+        else { ts.disable(); }
+      }
+      saveDraft();
+    });
+  }
+
+  function bindTicketBlock() {
+    var issueSelect = document.getElementById('issueSelect');
+    if (!issueSelect) return;
+
+    var ts = mountTomSelect(issueSelect, 'Select channel first...');
+    if (ts) ts.disable();
+
+    document.querySelectorAll('#channelPills .pill-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#channelPills .pill-btn').forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        var channel = btn.dataset.channel;
+        state.channelOrClinic = channel;
+        state.issueSubtype = null;
+
+        var pathKey = 'Ticket|' + channel;
+        var issues = (CONFIG.issues && CONFIG.issues[pathKey]) ? CONFIG.issues[pathKey] : [];
+        if (ts) {
+          ts.clearOptions();
+          ts.addOption({ value: '', text: 'Select an issue...' });
+          issues.forEach(function(issue) { ts.addOption({ value: issue, text: issue }); });
+          ts.refreshOptions(false);
+          ts.enable();
+          ts.setValue('', true);
+        }
+        saveDraft();
+      });
+    });
+  }
+
+  function bindClinicOpsBlock() {
+    var clinicSelect = document.getElementById('clinicSelect');
+    var serviceSelect = document.getElementById('serviceSelect');
+    var issueSelect = document.getElementById('issueSelect');
+    if (!clinicSelect || !serviceSelect || !issueSelect) return;
+
+    var ts = mountTomSelect(issueSelect, 'Select service first...');
+    if (ts) ts.disable();
+
+    var serviceOptions = (CONFIG.services && CONFIG.services['ClinicOps']) ? CONFIG.services['ClinicOps'] : [];
+
+    clinicSelect.addEventListener('change', function() {
+      state.channelOrClinic = clinicSelect.value || null;
+      state.serviceOrQueue = null;
+      state.issueSubtype = null;
+
+      serviceSelect.innerHTML = '<option value="">Select service...</option>';
+      serviceOptions.forEach(function(s) {
+        var opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        serviceSelect.appendChild(opt);
+      });
+      serviceSelect.disabled = !clinicSelect.value;
+
+      if (ts) {
+        ts.clearOptions();
+        ts.addOption({ value: '', text: 'Select service first...' });
+        ts.refreshOptions(false);
+        ts.disable();
+        ts.setValue('', true);
+      }
+      saveDraft();
+    });
+
+    serviceSelect.addEventListener('change', function() {
+      state.serviceOrQueue = serviceSelect.value || null;
+      state.issueSubtype = null;
+      var pathKey = 'ClinicOps|' + serviceSelect.value;
+      var issues = (CONFIG.issues && CONFIG.issues[pathKey]) ? CONFIG.issues[pathKey] : [];
+      if (ts) {
+        ts.clearOptions();
+        ts.addOption({ value: '', text: 'Select an issue...' });
+        issues.forEach(function(issue) { ts.addOption({ value: issue, text: issue }); });
+        ts.refreshOptions(false);
+        if (serviceSelect.value) { ts.enable(); ts.setValue('', true); }
+        else { ts.disable(); }
+      }
+      saveDraft();
+    });
+  }
+
+  // ============================================================
+  // LOAD DATA
+  // ============================================================
+  function loadAllData() {
+    google.script.run
+      .withSuccessHandler(onAllDataLoaded)
+      .withFailureHandler(function(err) {
+        showError('Could not load data: ' + (err && err.message ? err.message : err));
+      })
+      .getAgentDashboardData();
+  }
+
+  function onAllDataLoaded(data) {
+    allTickets = data.tickets || { tickets: [], summary: { total: 0, open: 0, resolved: 0 } };
+    allContacts = data.contacts || [];
+    allServices = data.services || [];
+    allDiscounts = data.discounts || [];
+    allCalendarEvents = data.calendarEvents || [];
+    allSuggestions = data.suggestions || [];
+    
+    updateBadges();
+    renderPendingTickets();
+    renderContacts();
+    renderServices();
+    renderDiscounts();
+    renderCalendar();
+    renderSuggestions();
+    
+    var userEmail = data.userEmail || 'User';
+    var initials = userEmail.split('@')[0].substring(0, 2).toUpperCase();
+    document.getElementById('userAvatar').textContent = initials || 'U';
+    document.getElementById('userName').textContent = userEmail.split('@')[0] || 'User';
+    document.getElementById('userRole').textContent = data.isManager ? 'Manager' : 'Agent';
+    
+    var managerLink = document.getElementById('managerLink');
+    if (managerLink) {
+      managerLink.style.display = data.isManager ? 'inline-block' : 'none';
+    }
+    
+    CONFIG = data.config;
+    populateAgents(data.config.agents);
+    populateBookingAgents(data.config.agents);
+    renderToolGrid(data.config.tools);
+    restoreDraft();
+  }
+
+  function updateBadges() {
+    var total = allTickets.summary ? allTickets.summary.total : 0;
+    var open = allTickets.summary ? allTickets.summary.open : 0;
+    
+    document.getElementById('issuesBadge').textContent = total;
+    document.getElementById('pendingBadge').textContent = open;
+    document.getElementById('pendingBadge').style.display = open > 0 ? 'inline' : 'none';
+    
+    var suggCount = allSuggestions.length || 0;
+    document.getElementById('suggestionsBadge').textContent = suggCount;
+  }
+
+  // ============================================================
+  // POPULATE FORM
+  // ============================================================
+  function populateAgents(agents) {
+    var sel = document.getElementById('agentName');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Select your name...</option>';
+    if (!agents || !agents.length) {
+      sel.innerHTML += '<option value="" disabled>No agents configured</option>';
+      return;
+    }
+    agents.forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderToolGrid(tools) {
+    var grid = document.getElementById('toolGrid');
+    grid.innerHTML = '';
+    if (!tools || !tools.length) {
+      grid.innerHTML = '<div style="grid-column:span 5; text-align:center; color:var(--text-muted); padding:16px 0;">No tools configured</div>';
+      return;
+    }
+    tools.forEach(function(tool) {
+      var card = document.createElement('div');
+      card.className = 'tool-card';
+      card.dataset.toolId = tool.id;
+      card.innerHTML = '<div class="icon">' + tool.icon + '</div><div class="label">' + tool.label + '</div>';
+      card.addEventListener('click', function() { selectTool(tool.id); });
+      grid.appendChild(card);
+    });
+  }
+
+  // ============================================================
+  // RENDER PENDING TICKETS
+  // ============================================================
+  function renderPendingTickets() {
+    var container = document.getElementById('pendingList');
+    if (!container) return;
+    
+    var tickets = allTickets.tickets || [];
+    if (!tickets.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">✅ No pending tickets. Great job!</p>';
+      return;
+    }
+    
+    container.innerHTML = tickets.map(function(t) {
+      var statusColor = t.status === 'New' ? 'var(--color-info)' : 'var(--color-warning)';
+      var statusBg = t.status === 'New' ? 'var(--color-info-bg)' : 'var(--color-warning-bg)';
+      return '<div style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:12px 16px;">' +
+        '<div><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(t.ticketId) + '</span>' +
+        '<span style="color:var(--text-muted); margin-left:8px; font-size:13px;">' + escapeHtml(t.tool) + '</span>' +
+        '<div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">' + escapeHtml(t.issueSubtype) + '</div></div>' +
+        '<div style="display:flex; align-items:center; gap:8px;"><span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:' + statusBg + '; color:' + statusColor + ';">' + escapeHtml(t.status) + '</span>' +
+        '<span style="font-size:11px; color:var(--text-muted);">' + timeAgo(t.timestamp) + '</span></div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // RENDER CONTACTS
+  // ============================================================
+  function renderContacts() {
+    var container = document.getElementById('contactsList');
+    if (!container) return;
+    
+    if (!allContacts || !allContacts.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No contacts available.</p>';
+      return;
+    }
+    
+    var groups = {};
+    allContacts.forEach(function(c) {
+      if (!groups[c.type]) groups[c.type] = [];
+      groups[c.type].push(c);
+    });
+    
+    var html = '';
+    Object.keys(groups).forEach(function(type) {
+      html += '<div style="grid-column:1/-1;"><strong style="color:var(--text-primary);">' + escapeHtml(type) + '</strong></div>';
+      groups[type].forEach(function(c) {
+        html += '<div class="contact-card">' +
+          '<div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(c.name) + '</div>' +
+          '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(c.role) + ' · ' + escapeHtml(c.team) + '</div>' +
+          '<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">📧 ' + escapeHtml(c.email) + '</div>' +
+          '<div style="font-size:12px; color:var(--text-muted);">📞 ' + escapeHtml(c.phone) + '</div></div>';
+      });
+    });
+    container.innerHTML = html;
+  }
+
+  // ============================================================
+  // RENDER SERVICES & DISCOUNTS
+  // ============================================================
+  function renderServices() {
+    var container = document.getElementById('servicesList');
+    if (!container) return;
+    
+    if (!allServices || !allServices.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:12px 0;">No services available.</p>';
+      return;
+    }
+    
+    container.innerHTML = allServices.map(function(s) {
+      return '<div style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:10px 14px;">' +
+        '<div><strong style="color:var(--text-primary);">' + escapeHtml(s.service) + '</strong>' +
+        '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(s.description) + '</div></div>' +
+        '<div style="text-align:right;"><div style="font-weight:700; color:var(--text-primary);">₹' + escapeHtml(s.price) + '</div>' +
+        (s.discountEligible === 'Yes' ? '<span class="discount-tag">Discount Eligible</span>' : '') + '</div></div>';
+    }).join('');
+  }
+
+  function renderDiscounts() {
+    var container = document.getElementById('discountsList');
+    if (!container) return;
+    
+    if (!allDiscounts || !allDiscounts.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:12px 0;">No discounts available.</p>';
+      return;
+    }
+    
+    container.innerHTML = allDiscounts.map(function(d) {
+      return '<div style="border:1px solid var(--border-light); border-radius:8px; padding:12px 14px; background:var(--color-success-bg);">' +
+        '<div style="font-weight:700; color:var(--color-primary);">' + escapeHtml(d.code) + '</div>' +
+        '<div style="font-size:13px; color:var(--text-primary);">' + escapeHtml(d.description) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">' + escapeHtml(d.discountPercent) + '% off · Valid until ' + escapeHtml(d.validUntil) + '</div>' +
+        '<div style="font-size:11px; color:var(--text-muted);">Applicable: ' + escapeHtml(d.applicableServices) + '</div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // RENDER CALENDAR
+  // ============================================================
+  function renderCalendar() {
+    var container = document.getElementById('calendarList');
+    if (!container) return;
+    
+    if (!allCalendarEvents || !allCalendarEvents.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No upcoming events.</p>';
+      return;
+    }
+    
+    container.innerHTML = allCalendarEvents.map(function(e) {
+      return '<div class="calendar-event" style="display:flex; align-items:center; justify-content:space-between;">' +
+        '<div><div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(e.event) + '</div>' +
+        '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(e.date) + ' at ' + escapeHtml(e.time) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-muted);">👥 ' + escapeHtml(e.attendees) + '</div></div>' +
+        '<span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:var(--color-info-bg); color:var(--color-info);">' + escapeHtml(e.type) + '</span></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // RENDER SUGGESTIONS
+  // ============================================================
+  function renderSuggestions() {
+    var container = document.getElementById('suggestionsList');
+    if (!container) return;
+    
+    if (!allSuggestions || !allSuggestions.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No suggestions yet. Be the first to suggest something!</p>';
+      return;
+    }
+    
+    container.innerHTML = allSuggestions.map(function(s) {
+      var statusColor = s.status === 'Implemented' ? 'var(--color-success)' :
+                       s.status === 'Under Review' ? 'var(--color-warning)' :
+                       s.status === 'Planned' ? 'var(--color-info)' : 'var(--text-muted)';
+      var statusBg = s.status === 'Implemented' ? 'var(--color-success-bg)' :
+                    s.status === 'Under Review' ? 'var(--color-warning-bg)' :
+                    s.status === 'Planned' ? 'var(--color-info-bg)' : 'var(--bg-hover)';
+      return '<div class="suggestion-item" style="border-left:3px solid ' + statusColor + '; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border-light); border-radius:8px; border-left-width:4px;">' +
+        '<div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(s.agentName) + '</span>' +
+        '<span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:' + statusBg + '; color:' + statusColor + ';">' + escapeHtml(s.status) + '</span></div>' +
+        '<div style="font-size:13px; color:var(--text-primary); margin:4px 0;">' + escapeHtml(s.description) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-muted);">🛠️ ' + escapeHtml(s.tool) + '</div>' +
+        (s.adminNote ? '<div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">📝 Admin: ' + escapeHtml(s.adminNote) + '</div>' : '') +
+        '<div style="font-size:11px; color:var(--text-muted); margin-top:4px;">' + (s.timestamp ? timeAgo(s.timestamp) : '') + '</div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // SUBMIT FORM
+  // ============================================================
+  function handleSubmit(e) {
+    e.preventDefault();
+    hideError();
+
+    var ticketId = document.getElementById('ticketId').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var agentName = document.getElementById('agentName').value;
+
+    if (!ticketId) return showError('Ticket ID is required.');
+    if (phone.length !== 10) return showError('Customer phone number must be exactly 10 digits.');
+    if (!agentName) return showError('Please select your name.');
+    if (!state.tool) return showError('Please select which tool/area has the issue.');
+    if (['PawCare', 'Ticket', 'ClinicOps'].indexOf(state.tool) !== -1 && !state.channelOrClinic) {
+      return showError('Please complete the required dropdowns for this tool.');
+    }
+    if (state.tool === 'ClinicOps' && !state.serviceOrQueue) {
+      return showError('Please select a Service.');
+    }
+    if (!state.issueSubtype) return showError('Please select an issue.');
+
+    var payload = {
+      ticketId: ticketId,
+      phone: phone,
+      agentName: agentName,
+      tool: state.tool,
+      isEscalation: document.getElementById('isEscalation').checked,
+      channelOrClinic: state.channelOrClinic || '',
+      serviceOrQueue: state.serviceOrQueue || '',
+      issueSubtype: state.issueSubtype,
+      description: document.getElementById('description').value.trim(),
+      attachment: state.attachment
+    };
+
+    setSubmitting(true);
+    google.script.run
+      .withSuccessHandler(function(res) { onSubmitSuccess(res, payload); })
+      .withFailureHandler(function(err) { onSubmitError(err); })
+      .submitIssue(payload);
+  }
+
+  function setSubmitting(isSubmitting) {
+    var btn = document.getElementById('submitBtn');
+    if (!btn) return;
+    btn.disabled = isSubmitting;
+    btn.style.opacity = isSubmitting ? '0.6' : '1';
+    var btnText = document.getElementById('submitBtnText');
+    if (btnText) btnText.textContent = isSubmitting ? 'Submitting...' : 'Submit issue →';
+  }
+
+  function onSubmitSuccess(res, payload) {
+    setSubmitting(false);
+    showToast('✅ Ticket ' + res.ticketId + ' logged — ' + res.slaLabel);
+    addToRecent({ ticketId: payload.ticketId, tool: payload.tool, time: new Date().toISOString() });
+    resetFormAfterSubmit();
+    loadAllData();
+  }
+
+  function onSubmitError(err) {
+    setSubmitting(false);
+    showError('Submission failed: ' + (err && err.message ? err.message : err));
+  }
+
+  function resetFormAfterSubmit() {
+    document.getElementById('ticketId').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('isEscalation').checked = false;
+    clearFile();
+    state.channelOrClinic = null;
+    state.serviceOrQueue = null;
+    state.issueSubtype = null;
+    renderSubFields();
+    updateSlaBanner();
+    saveDraft();
+  }
+
+  // ============================================================
+  // BIND STATIC HANDLERS
+  // ============================================================
+  function bindStaticHandlers() {
+    // Index-only form bindings — skip entirely on Management page (elements not present)
+    if (!document.getElementById('issueForm')) {
+      bindFeatureHandlers();
+      return;
+    }
+
+    var ticketId = document.getElementById('ticketId');
+    ticketId.addEventListener('input', function() {
+      var start = this.selectionStart;
+      var beforeCursor = this.value.slice(0, start);
+      var removedBeforeCursor = (beforeCursor.match(/\s/g) || []).length;
+      this.value = this.value.toUpperCase().replace(/\s+/g, '');
+      var newPos = Math.max(0, start - removedBeforeCursor);
+      this.setSelectionRange(newPos, newPos);
+      saveDraft();
+    });
+
+    var phone = document.getElementById('phone');
+    phone.addEventListener('input', function() {
+      phone.value = phone.value.replace(/\D/g, '').slice(0, 10);
+      saveDraft();
+    });
+
+    document.getElementById('agentName').addEventListener('change', saveDraft);
+    document.getElementById('isEscalation').addEventListener('change', updateSlaBanner);
+    document.getElementById('issueForm').addEventListener('submit', handleSubmit);
+
+    document.getElementById('drawerToggle').addEventListener('click', function() {
+      var body = document.getElementById('drawerBody');
+      var chevron = document.getElementById('drawerChevron');
+      var isHidden = body.classList.contains('hidden');
+      body.classList.toggle('hidden');
+      chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    setupDropZone();
+
+    // --- Feature 1: Booking Tracker bindings ---
+    var aptInput = document.getElementById('aptIdInput');
+    if (aptInput) {
+      aptInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); handleLogBooking(); }
+      });
+    }
+    var logBtn = document.getElementById('logBookingBtn');
+    if (logBtn) logBtn.addEventListener('click', handleLogBooking);
+    var bkAgent = document.getElementById('bookingAgent');
+    if (bkAgent) bkAgent.addEventListener('change', refreshBookingData);
+
+    // --- Feature 2: Preset Notes bindings ---
+    var notesSearch = document.getElementById('notesSearch');
+    if (notesSearch) notesSearch.addEventListener('input', renderNotesGrid);
+
+    // --- Feature 3: Command palette bindings ---
+    bindCommandPalette();
+  }
+
+  // ============================================================
+  // BOOKING TRACKER (Feature 1)
+  // ============================================================
+  var allMyBookings = [];
+  var bookingsPage = 1;
+  var BOOKINGS_PER_PAGE = 10;
+  var confettiShownThisSession = false;
+
+  function getBookingAgent() {
+    var sel = document.getElementById('bookingAgent');
+    return sel ? sel.value : '';
+  }
+
+  function populateBookingAgents(agents) {
+    var sel = document.getElementById('bookingAgent');
+    if (!sel) return;
+    var prev = sel.value;
+    sel.innerHTML = '<option value="">Select your name...</option>';
+    (agents || []).forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      sel.appendChild(opt);
+    });
+    if (prev) sel.value = prev;
+  }
+
+  function showBookingFeedback(html, isError) {
+    var el = document.getElementById('bookingFeedback');
+    if (!el) return;
+    el.innerHTML = '<div class="' + (isError ? 'feedback-error' : 'feedback-success') + '">' + html + '</div>';
+    clearTimeout(el._t);
+    if (!isError) el._t = setTimeout(function() { el.innerHTML = ''; }, 2500);
+  }
+
+  function handleLogBooking() {
+    var input = document.getElementById('aptIdInput');
+    var agent = getBookingAgent();
+    var aptId = (input.value || '').trim().toUpperCase();
+
+    if (!agent) { showBookingFeedback('⚠️ Please select your name first', true); return; }
+    if (!aptId) { showBookingFeedback('❌ Invalid Appointment ID', true); return; }
+
+    var btn = document.getElementById('logBookingBtn');
+    btn.disabled = true; btn.style.opacity = '0.6';
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        btn.disabled = false; btn.style.opacity = '1';
+        showBookingFeedback('✅ Logged ' + escapeHtml(res.appointmentId) + ' for ' + escapeHtml(res.customerName), false);
+        input.value = '';
+        input.focus();
+        refreshBookingData();
+      })
+      .withFailureHandler(function(err) {
+        btn.disabled = false; btn.style.opacity = '1';
+        var msg = (err && err.message) ? err.message : String(err);
+        if (msg.indexOf('already logged') !== -1) showBookingFeedback('⚠️ This booking is already logged', true);
+        else if (msg.indexOf('Invalid Appointment') !== -1) showBookingFeedback('❌ Invalid Appointment ID', true);
+        else showBookingFeedback('❌ ' + escapeHtml(msg), true);
+        input.focus();
+      })
+      .logBooking(aptId, agent);
+  }
+
+  function refreshBookingData() {
+    var agent = getBookingAgent();
+    if (!agent) return;
+    google.script.run.withSuccessHandler(renderBookingStats).getMyStats(agent);
+    google.script.run.withSuccessHandler(renderRecentBookings).getMyRecentBookings(agent, 10);
+  }
+
+  function renderBookingStats(stats) {
+    if (!stats) return;
+    var CIRC = 471.24; // 2 * PI * 75
+    var pct = Math.max(0, Math.min(100, stats.percent || 0));
+    var ring = document.getElementById('ringProgress');
+    if (ring) ring.setAttribute('stroke-dashoffset', String(CIRC * (1 - pct / 100)));
+    document.getElementById('ringMtd').textContent = stats.mtd;
+    document.getElementById('ringTarget').textContent = '/ ' + (stats.target || '—');
+    document.getElementById('ringPercent').textContent = pct + '%';
+    document.getElementById('statToday').textContent = stats.today;
+    document.getElementById('statWeek').textContent = stats.thisWeek;
+    document.getElementById('statMtd').textContent = stats.mtd;
+    document.getElementById('tgtGoal').textContent = stats.target || '—';
+    document.getElementById('tgtRemaining').textContent = stats.target ? stats.remaining : '—';
+    document.getElementById('tgtPace').textContent = stats.remaining > 0 ? stats.dailyPace + '/day' : 'On track 🎉';
+
+    var card = document.getElementById('targetCard');
+    card.classList.remove('status-green', 'status-amber', 'status-red');
+    if (pct >= 80) card.classList.add('status-green');
+    else if (pct >= 50) card.classList.add('status-amber');
+    else card.classList.add('status-red');
+
+    document.getElementById('rankValue').textContent =
+      stats.rank ? '#' + stats.rank + ' of ' + stats.teamSize : '—';
+
+    if (stats.target > 0 && pct >= 100 && !confettiShownThisSession) {
+      confettiShownThisSession = true;
+      launchConfetti();
+    }
+  }
+
+  function launchConfetti() {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    } catch (e) {}
+    var emojis = ['🎉', '✨', '🎊', '⭐', '🐾'];
+    for (var i = 0; i < 20; i++) {
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.textContent = emojis[i % emojis.length];
+      piece.style.left = (Math.random() * 100) + 'vw';
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+      piece.style.animationDelay = (Math.random() * 0.6) + 's';
+      document.body.appendChild(piece);
+      (function(p) { setTimeout(function() { p.remove(); }, 5000); })(piece);
+    }
+  }
+
+  function renderRecentBookings(data) {
+    var list = document.getElementById('recentBookingsList');
+    var empty = document.getElementById('recentBookingsEmpty');
+    var pill = document.getElementById('todayCountPill');
+    if (!list) return;
+    var items = (data && data.items) || [];
+    pill.textContent = items.length;
+    list.innerHTML = '';
+    if (!items.length) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    items.forEach(function(b) {
+      var row = document.createElement('div');
+      row.className = 'recent-row';
+      row.innerHTML =
+        '<div style="min-width:0;"><div><span style="color:var(--color-success);">✅</span> <span class="apt-id">' + escapeHtml(b.appointmentId) + '</span></div>' +
+        '<div style="color:var(--text-secondary); font-size:12px; margin-top:2px;">' + escapeHtml(b.customerName) + ' · ' + escapeHtml(b.phone) + '</div></div>' +
+        '<span style="color:var(--text-muted); font-size:11px; white-space:nowrap;">' + timeAgo(b.timestamp) + '</span>';
+      list.appendChild(row);
+    });
+  }
+
+  // ---- View All modal ----
+  function openAllBookingsModal() {
+    var agent = getBookingAgent();
+    if (!agent) { showToast('Select your name first'); return; }
+    var now = new Date();
+    var startIso = Utilities_isoMonth(now, 0);
+    var endIso = formatDateForInput(now);
+    var existing = document.getElementById('allBookingsModal');
+    if (existing) existing.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'allBookingsModal';
+    modal.className = 'modal-backdrop';
+    modal.innerHTML =
+      '<div style="background:var(--bg-card); border-radius:16px; width:720px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; padding:20px;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">' +
+      '<h3 style="font-weight:700; font-size:16px; color:var(--text-primary);">📅 All My Bookings</h3>' +
+      '<button onclick="closeAllBookingsModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✕</button></div>' +
+      '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">' +
+      '<input id="bkSearch" type="text" class="input-base" placeholder="Search ID, customer, phone..." style="flex:2; min-width:180px;" autocomplete="off">' +
+      '<select id="bkRange" class="input-base" style="flex:1; min-width:130px;">' +
+      '<option value="this">This Month</option><option value="last">Last Month</option><option value="custom">Custom</option></select>' +
+      '</div>' +
+      '<div id="bkCustomRange" style="display:none; gap:8px; margin-bottom:12px;">' +
+      '<input id="bkStart" type="date" class="input-base" style="flex:1;" value="' + startIso + '">' +
+      '<input id="bkEnd" type="date" class="input-base" style="flex:1;" value="' + endIso + '"></div>' +
+      '<div id="bkTableWrap" style="flex:1; overflow-y:auto; border:1px solid var(--border-light); border-radius:10px;"></div>' +
+      '<div id="bkPager" style="display:flex; justify-content:center; align-items:center; gap:6px; margin-top:12px;"></div>' +
+      '</div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeAllBookingsModal(); });
+
+    var debouncedLoad;
+    document.getElementById('bkSearch').addEventListener('input', function() {
+      clearTimeout(debouncedLoad);
+      debouncedLoad = setTimeout(loadAllBookings, 300);
+    });
+    document.getElementById('bkRange').addEventListener('change', function() {
+      document.getElementById('bkCustomRange').style.display = this.value === 'custom' ? 'flex' : 'none';
+      loadAllBookings();
+    });
+    document.getElementById('bkStart').addEventListener('change', loadAllBookings);
+    document.getElementById('bkEnd').addEventListener('change', loadAllBookings);
+    loadAllBookings();
+  }
+
+  function closeAllBookingsModal() {
+    var m = document.getElementById('allBookingsModal');
+    if (m) m.remove();
+  }
+
+  function formatDateForInput(d) {
+    var m = ('0' + (d.getMonth() + 1)).slice(-2), day = ('0' + d.getDate()).slice(-2);
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  function Utilities_isoMonth(d, offsetMonths) {
+    var dt = new Date(d.getFullYear(), d.getMonth() + offsetMonths, 1);
+    return formatDateForInput(dt);
+  }
+
+  function loadAllBookings() {
+    var agent = getBookingAgent();
+    var range = document.getElementById('bkRange').value;
+    var term = document.getElementById('bkSearch').value || '';
+    var now = new Date();
+    var start, end;
+    if (range === 'this') { start = Utilities_isoMonth(now, 0); end = formatDateForInput(now); }
+    else if (range === 'last') { start = Utilities_isoMonth(now, -1); end = formatDateForInput(new Date(now.getFullYear(), now.getMonth(), 0)); }
+    else { start = document.getElementById('bkStart').value; end = document.getElementById('bkEnd').value; }
+
+    google.script.run
+      .withSuccessHandler(function(rows) {
+        allMyBookings = rows || [];
+        bookingsPage = 1;
+        renderBookingsTable();
+      })
+      .withFailureHandler(function(err) {
+        showToast('Could not load bookings: ' + (err && err.message ? err.message : err));
+      })
+      .getAllMyBookings(agent, start, end, term);
+  }
+
+  function renderBookingsTable() {
+    var wrap = document.getElementById('bkTableWrap');
+    var pager = document.getElementById('bkPager');
+    if (!wrap) return;
+    var totalPages = Math.max(1, Math.ceil(allMyBookings.length / BOOKINGS_PER_PAGE));
+    if (bookingsPage > totalPages) bookingsPage = totalPages;
+    var slice = allMyBookings.slice((bookingsPage - 1) * BOOKINGS_PER_PAGE, bookingsPage * BOOKINGS_PER_PAGE);
+
+    if (!allMyBookings.length) {
+      wrap.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:24px; font-size:13px;">No bookings found for this filter.</div>';
+      pager.innerHTML = '';
+      return;
+    }
+
+    var html = '<table style="width:100%; border-collapse:collapse; font-size:12px;">' +
+      '<thead><tr style="background:var(--bg-table-header); position:sticky; top:0;">' +
+      '<th style="text-align:left; padding:8px 10px;">Timestamp</th><th style="text-align:left; padding:8px 10px;">Appointment ID</th>' +
+      '<th style="text-align:left; padding:8px 10px;">Customer</th><th style="text-align:left; padding:8px 10px;">Phone</th><th style="padding:8px 10px;"></th></tr></thead><tbody>';
+    slice.forEach(function(b, idx) {
+      var ts = '';
+      try { ts = new Date(b.timestamp).toLocaleString(); } catch (e) { ts = b.timestamp; }
+      html += '<tr style="border-top:1px solid var(--border-light);">' +
+        '<td style="padding:8px 10px; color:var(--text-secondary); white-space:nowrap;">' + escapeHtml(ts) + '</td>' +
+        '<td style="padding:8px 10px;"><span class="apt-id">' + escapeHtml(b.appointmentId) + '</span></td>' +
+        '<td style="padding:8px 10px;">' + escapeHtml(b.customerName) + '</td>' +
+        '<td style="padding:8px 10px;">' + escapeHtml(b.phone) + '</td>' +
+        '<td style="padding:8px 10px; text-align:center;"><button class="cmd-action" title="Copy Appointment ID" onclick="copyToClipboard(\'' + escapeHtml(b.appointmentId) + '\')">📋</button></td></tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+
+    var pHtml = '<button class="page-btn" ' + (bookingsPage <= 1 ? 'disabled' : '') + ' onclick="gotoBookingsPage(' + (bookingsPage - 1) + ')">← Prev</button>';
+    for (var p = 1; p <= totalPages; p++) {
+      if (totalPages > 7 && Math.abs(p - bookingsPage) > 2 && p !== 1 && p !== totalPages) {
+        if (p === 2 || p === totalPages - 1) pHtml += '<span style="color:var(--text-muted);">…</span>';
+        continue;
+      }
+      pHtml += '<button class="page-btn' + (p === bookingsPage ? ' active' : '') + '" onclick="gotoBookingsPage(' + p + ')">' + p + '</button>';
+    }
+    pHtml += '<button class="page-btn" ' + (bookingsPage >= totalPages ? 'disabled' : '') + ' onclick="gotoBookingsPage(' + (bookingsPage + 1) + ')">Next →</button>';
+    pager.innerHTML = pHtml;
+  }
+
+  function gotoBookingsPage(p) { bookingsPage = p; renderBookingsTable(); }
+
+  // ============================================================
+  // PRESET NOTES (Feature 2)
+  // ============================================================
+  var presetNotes = null;         // loaded once
+  var notesCategory = 'All';
+  var NOTE_CATEGORIES = ['All', 'Refunds', 'Delivery', 'Order Confirmation', 'Escalation', 'Appointment'];
+
+  function copyToClipboard(text) {
+    function fallback() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('✅ Copied to clipboard!');
+      } catch (e) { showToast('❌ Copy failed'); }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('✅ Copied to clipboard!');
+      }).catch(fallback);
+    } else fallback();
+  }
+
+  function extractPlaceholders(text) {
+    var seen = {}, out = [];
+    var re = /\{([A-Za-z][A-Za-z0-9_]*)\}/g, m;
+    while ((m = re.exec(text)) !== null) {
+      if (!seen[m[1]]) { seen[m[1]] = true; out.push(m[1]); }
+    }
+    return out;
+  }
+
+  function substitutePlaceholders(text, values) {
+    return text.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, function(_, key) {
+      return values[key] !== undefined && values[key] !== '' ? values[key] : '{' + key + '}';
+    });
+  }
+
+  function loadPresetNotes(force) {
+    if (presetNotes && !force) { renderNoteChips(); renderNotesGrid(); return; }
+    google.script.run
+      .withSuccessHandler(function(notes) {
+        presetNotes = notes || [];
+        renderNoteChips();
+        renderNotesGrid();
+      })
+      .withFailureHandler(function(err) {
+        showToast('Could not load notes: ' + (err && err.message ? err.message : err));
+      })
+      .getPresetNotes();
+  }
+
+  function renderNoteChips() {
+    var wrap = document.getElementById('noteChips');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    NOTE_CATEGORIES.forEach(function(cat) {
+      var chip = document.createElement('button');
+      chip.className = 'chip' + (cat === notesCategory ? ' active' : '');
+      chip.textContent = cat;
+      chip.onclick = function() { notesCategory = cat; renderNoteChips(); renderNotesGrid(); };
+      wrap.appendChild(chip);
+    });
+  }
+
+  function renderNotesGrid() {
+    var grid = document.getElementById('notesGrid');
+    var emptyEl = document.getElementById('notesEmpty');
+    if (!grid) return;
+    var term = (document.getElementById('notesSearch').value || '').trim().toLowerCase();
+    var notes = (presetNotes || []).filter(function(n) {
+      if (notesCategory !== 'All' && n.category !== notesCategory) return false;
+      if (term && (n.title + ' ' + n.text).toLowerCase().indexOf(term) === -1) return false;
+      return true;
+    });
+    grid.innerHTML = '';
+    if (!notes.length) { emptyEl.style.display = 'block'; return; }
+    emptyEl.style.display = 'none';
+    notes.forEach(function(note, i) {
+      var preview = note.text.length > 100 ? note.text.slice(0, 100).trim() + '…' : note.text;
+      var card = document.createElement('div');
+      card.className = 'note-card';
+      card.innerHTML =
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:6px;">' +
+        '<div style="font-weight:700; font-size:15px; color:var(--text-primary);">' + escapeHtml(note.title) + '</div>' +
+        '<button class="cmd-action" title="Copy" onclick="event.stopPropagation(); handleNoteCopy(' + i + ', this)">📋 Copy</button></div>' +
+        '<div style="margin-bottom:8px;"><span class="cat-badge">' + escapeHtml(note.category) + '</span></div>' +
+        '<div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">' + escapeHtml(preview) + '</div>';
+      card.dataset.filteredIndex = notes.indexOf(note);
+      card.addEventListener('click', function() { handleNoteCopy(card.dataset.filteredIndex, card); });
+      grid.appendChild(card);
+    });
+    grid._filtered = notes;
+  }
+
+  function handleNoteCopy(index, anchorEl) {
+    var notes = (document.getElementById('notesGrid')._filtered) || [];
+    var note = notes[Number(index)];
+    if (!note) return;
+    var placeholders = extractPlaceholders(note.text);
+    if (placeholders.length) {
+      openPlaceholderModal(note, placeholders, anchorEl);
+    } else {
+      copyToClipboard(note.text);
+    }
+  }
+
+  function openPlaceholderModal(note, placeholders, anchorEl) {
+    closePlaceholderModal();
+    var modal = document.createElement('div');
+    modal.id = 'placeholderModalBackdrop';
+    modal.style.cssText = 'position:fixed; inset:0; z-index:9998; background:transparent;';
+    document.body.appendChild(modal);
+
+    var box = document.createElement('div');
+    box.className = 'placeholder-modal';
+    box.id = 'placeholderModalBox';
+    var inputs = placeholders.map(function(p) {
+      return '<div style="margin-bottom:8px;"><label class="field-label">' + escapeHtml(p) + '</label>' +
+        '<input class="input-base ph-input" data-key="' + escapeHtml(p) + '" placeholder="' + escapeHtml(p) + '" style="margin-top:4px;"></div>';
+    }).join('');
+    box.innerHTML =
+      '<div style="font-weight:700; font-size:14px; margin-bottom:10px; color:var(--text-primary);">' + escapeHtml(note.title) + '</div>' +
+      inputs +
+      '<div style="display:flex; gap:8px; margin-top:12px;">' +
+      '<button id="phCopyValues" style="flex:2; background:var(--color-primary); color:white; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer; font-size:13px;">📋 Copy with values</button>' +
+      '<button id="phCopyRaw" style="flex:1; background:var(--bg-hover); color:var(--text-primary); border:1px solid var(--border-medium); border-radius:8px; padding:8px; font-weight:600; cursor:pointer; font-size:13px;">Copy raw</button></div>';
+    document.body.appendChild(box);
+
+    // Position near the clicked card
+    try {
+      var rect = (anchorEl && anchorEl.getBoundingClientRect) ? anchorEl.getBoundingClientRect() : null;
+      if (rect) {
+        var top = Math.min(rect.top, window.innerHeight - box.offsetHeight - 16);
+        var left = Math.min(rect.right + 12, window.innerWidth - box.offsetWidth - 12);
+        if (left < 8) left = 8;
+        box.style.top = Math.max(8, top) + 'px';
+        box.style.left = left + 'px';
+      } else {
+        box.style.top = '50%'; box.style.left = '50%';
+        box.style.transform = 'translate(-50%, -50%)';
+      }
+    } catch (e) {
+      box.style.top = '80px'; box.style.left = '50%';
+    }
+
+    box.addEventListener('click', function(e) { e.stopPropagation(); });
+    modal.addEventListener('click', closePlaceholderModal);
+
+    document.getElementById('phCopyRaw').onclick = function() {
+      copyToClipboard(note.text);
+      closePlaceholderModal();
+    };
+    document.getElementById('phCopyValues').onclick = function() {
+      var values = {};
+      box.querySelectorAll('.ph-input').forEach(function(inp) { values[inp.dataset.key] = inp.value; });
+      copyToClipboard(substitutePlaceholders(note.text, values));
+      closePlaceholderModal();
+    };
+    var first = box.querySelector('.ph-input');
+    if (first) first.focus();
+  }
+
+  function closePlaceholderModal() {
+    var a = document.getElementById('placeholderModalBackdrop');
+    var b = document.getElementById('placeholderModalBox');
+    if (a) a.remove();
+    if (b) b.remove();
+  }
+
+  // ============================================================
+  // UNIVERSAL SEARCH — COMMAND PALETTE (Feature 3)
+  // ============================================================
+  var RECENT_SEARCHES_KEY = 'clinicIssueLog_recentSearches';
+  var cmdState = { timer: null, results: null, flat: [], highlighted: -1, lastQuery: '' };
+
+  function cmdSaveRecent(query) {
+    try {
+      var list = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || '[]');
+      list = list.filter(function(x) { return x !== query; });
+      list.unshift(query);
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(list.slice(0, 5)));
+    } catch (e) {}
+  }
+
+  function cmdGetRecent() {
+    try { return JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || '[]'); } catch (e) { return []; }
+  }
+
+  function cmdClose() {
+    var panel = document.getElementById('cmdSearchPanel');
+    if (panel) panel.style.display = 'none';
+    cmdState.highlighted = -1;
+  }
+
+  function cmdRun(query) {
+    var panel = document.getElementById('cmdSearchPanel');
+    if (!query || query.trim().length < 2) { cmdRenderRecent(); return; }
+    google.script.run
+      .withSuccessHandler(function(res) {
+        cmdState.results = res;
+        cmdRenderResults(res, query);
+      })
+      .withFailureHandler(function(err) {
+        panel.innerHTML = '<div style="padding:14px; font-size:13px; color:var(--color-error);">Search failed: ' + escapeHtml(err && err.message ? err.message : err) + '</div>';
+        panel.style.display = 'block';
+      })
+      .globalSearch(query);
+  }
+
+  function cmdRenderRecent() {
+    var panel = document.getElementById('cmdSearchPanel');
+    var recent = cmdGetRecent();
+    if (!recent.length) { panel.style.display = 'none'; return; }
+    var html = '<div class="cmd-group-header">🕐 Recent Searches</div>';
+    recent.forEach(function(q) {
+      html += '<div class="cmd-row" onclick="cmdPickRecent(\'' + escapeHtml(q).replace(/'/g, '&#39;') + '\')">' +
+        '<span>🔍 ' + escapeHtml(q) + '</span></div>';
+    });
+    panel.innerHTML = html;
+    panel.style.display = 'block';
+    cmdState.flat = [];
+  }
+
+  function cmdPickRecent(q) {
+    var input = document.getElementById('cmdSearchInput');
+    input.value = q;
+    cmdRun(q);
+    input.focus();
+  }
+
+  function cmdRenderResults(res, query) {
+    var panel = document.getElementById('cmdSearchPanel');
+    cmdState.flat = [];
+    var tickets = (res && res.tickets) || [];
+    var bookings = (res && res.bookings) || [];
+    var notes = (res && res.notes) || [];
+
+    if (!tickets.length && !bookings.length && !notes.length) {
+      panel.innerHTML = '<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:13px;">No matches found for \'' + escapeHtml(query) + '\'</div>';
+      panel.style.display = 'block';
+      return;
+    }
+
+    cmdSaveRecent(query.trim());
+    var html = '';
+    if (tickets.length) {
+      html += '<div class="cmd-group-header">🎫 Tickets (' + tickets.length + ')</div>';
+      tickets.forEach(function(t, i) {
+        cmdState.flat.push({ type: 'ticket', data: t });
+        html += '<div class="cmd-row" data-flat="' + (cmdState.flat.length - 1) + '">' +
+          '<div style="min-width:0;"><div style="font-weight:600; color:var(--text-primary);">#' + escapeHtml(t.ticketId) + ' · ' + escapeHtml(t.tool) + ' · ' + escapeHtml(t.agentName) + '</div>' +
+          '<div style="font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + escapeHtml(t.phone) + ' · ' + escapeHtml((t.issueSubtype || t.description || '').slice(0, 60)) + '</div></div>' +
+          '<div style="white-space:nowrap;">' +
+          '<button class="cmd-action" title="Copy phone" onclick="event.stopPropagation(); copyToClipboard(\'' + escapeHtml(t.phone) + '\')">📞</button>' +
+          '<button class="cmd-action" title="Copy ticket ID" onclick="event.stopPropagation(); copyToClipboard(\'' + escapeHtml(t.ticketId) + '\')">📋</button></div></div>';
+      });
+    }
+    if (bookings.length) {
+      html += '<div class="cmd-group-header">📅 Bookings (' + bookings.length + ')</div>';
+      bookings.forEach(function(b) {
+        cmdState.flat.push({ type: 'booking', data: b });
+        html += '<div class="cmd-row" data-flat="' + (cmdState.flat.length - 1) + '">' +
+          '<div style="min-width:0;"><div><span class="apt-id">' + escapeHtml(b.appointmentId) + '</span> · ' + escapeHtml(b.customerName) + '</div>' +
+          '<div style="font-size:11px; color:var(--text-muted);">' + escapeHtml(b.phone) + ' · logged by ' + escapeHtml(b.agentName) + '</div></div>' +
+          '<div style="white-space:nowrap;">' +
+          '<button class="cmd-action" title="Copy Appointment ID" onclick="event.stopPropagation(); copyToClipboard(\'' + escapeHtml(b.appointmentId) + '\')">📋</button></div></div>';
+      });
+    }
+    if (notes.length) {
+      html += '<div class="cmd-group-header">📋 Notes (' + notes.length + ')</div>';
+      notes.forEach(function(n) {
+        cmdState.flat.push({ type: 'note', data: n });
+        html += '<div class="cmd-row" data-flat="' + (cmdState.flat.length - 1) + '">' +
+          '<div style="min-width:0;"><div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(n.title) + ' <span class="cat-badge">' + escapeHtml(n.category) + '</span></div>' +
+          '<div style="font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + escapeHtml(n.text.slice(0, 70)) + '…</div></div>' +
+          '<div style="white-space:nowrap;">' +
+          '<button class="cmd-action" title="Copy full text" onclick="event.stopPropagation(); copyToClipboard(cmdState.flat[' + (cmdState.flat.length - 1) + '].data.text)">📋</button></div></div>';
+      });
+    }
+    panel.innerHTML = html;
+    panel.style.display = 'block';
+
+    panel.querySelectorAll('.cmd-row').forEach(function(row) {
+      row.addEventListener('click', function() {
+        cmdOpenItem(cmdState.flat[Number(row.dataset.flat)]);
+      });
+    });
+    cmdSetHighlight(-1);
+  }
+
+  function cmdSetHighlight(idx) {
+    var panel = document.getElementById('cmdSearchPanel');
+    panel.querySelectorAll('.cmd-row').forEach(function(r) { r.classList.remove('highlighted'); });
+    cmdState.highlighted = idx;
+    if (idx >= 0 && idx < cmdState.flat.length) {
+      var row = panel.querySelector('.cmd-row[data-flat="' + idx + '"]');
+      if (row) { row.classList.add('highlighted'); row.scrollIntoView({ block: 'nearest' }); }
+    }
+  }
+
+  function cmdPrimaryValue(item) {
+    if (!item) return '';
+    if (item.type === 'ticket') return item.data.ticketId;
+    if (item.type === 'booking') return item.data.appointmentId;
+    if (item.type === 'note') return item.data.text;
+    return '';
+  }
+
+  function cmdOpenItem(item) {
+    if (!item) return;
+    if (item.type === 'ticket') {
+      switchPage('issues');
+      cmdClose();
+      document.getElementById('cmdSearchInput').blur();
+      showToast('Opened #' + item.data.ticketId + ' — see Pending/Issues');
+    } else if (item.type === 'booking') {
+      switchPage('bookings');
+      cmdClose();
+      document.getElementById('aptIdInput').value = item.data.appointmentId;
+      document.getElementById('aptIdInput').focus();
+    } else if (item.type === 'note') {
+      copyToClipboard(item.data.text);
+      cmdClose();
+    }
+  }
+
+  function bindCommandPalette() {
+    var input = document.getElementById('cmdSearchInput');
+    var panel = document.getElementById('cmdSearchPanel');
+    if (!input || !panel) return;
+
+    input.addEventListener('input', function() {
+      clearTimeout(cmdState.timer);
+      var q = input.value;
+      if (!q.trim()) { cmdRenderRecent(); return; }
+      cmdState.timer = setTimeout(function() { cmdRun(q); }, 300);
+    });
+
+    input.addEventListener('focus', function() {
+      if (!input.value.trim()) cmdRenderRecent();
+      else if (cmdState.results) panel.style.display = 'block';
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!document.getElementById('cmdSearchWrap').contains(e.target)) cmdClose();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        input.focus();
+        input.select();
+        return;
+      }
+      if (panel.style.display === 'none' || document.activeElement !== input) {
+        if (e.key === 'Escape') closePlaceholderModal();
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        cmdSetHighlight(Math.min(cmdState.flat.length - 1, cmdState.highlighted + 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        cmdSetHighlight(Math.max(0, cmdState.highlighted - 1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        var item = cmdState.flat[cmdState.highlighted];
+        if (e.ctrlKey || e.metaKey) {
+          if (item) copyToClipboard(cmdPrimaryValue(item));
+        } else if (item) {
+          cmdOpenItem(item);
+        }
+      } else if (e.key === 'Escape') {
+        cmdClose();
+        input.blur();
+      }
+    });
+  }
+
+  // ============================================================
+  // FEATURE GLUE (Management): bindings, hooks, aliases
+  // ============================================================
+  function bindFeatureHandlers() {
+    var aptInput = document.getElementById('aptIdInput');
+    if (aptInput) {
+      aptInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); handleLogBooking(); }
+      });
+    }
+    var logBtn = document.getElementById('logBookingBtn');
+    if (logBtn) logBtn.addEventListener('click', handleLogBooking);
+    var bkAgent = document.getElementById('bookingAgent');
+    if (bkAgent) bkAgent.addEventListener('change', refreshBookingData);
+
+    var notesSearch = document.getElementById('notesSearch');
+    if (notesSearch) notesSearch.addEventListener('input', renderNotesGrid);
+
+    bindCommandPalette();
+  }
+
+  window.handleLogBooking = handleLogBooking;
+  window.refreshBookingData = refreshBookingData;
+  window.openAllBookingsModal = openAllBookingsModal;
+  window.closeAllBookingsModal = closeAllBookingsModal;
+  window.loadAllBookings = loadAllBookings;
+  window.gotoBookingsPage = gotoBookingsPage;
+  window.handleNoteCopy = handleNoteCopy;
+  window.renderNotesGrid = renderNotesGrid;
+  window.copyToClipboard = copyToClipboard;
+  window.cmdPickRecent = cmdPickRecent;
+
   document.addEventListener('DOMContentLoaded', function() {
     var theme = localStorage.getItem(THEME_KEY);
     if (!theme) {
@@ -2189,6 +4057,8 @@
     loadData();
     bindStaticHandlers();
     bindShortcutsHelp();
+    bindFeatureHandlers();
+    loadPresetNotes();
 
     setInterval(updateFRTOnly, FRT_UPDATE_INTERVAL);
     setInterval(loadData, 60000);

@@ -12,6 +12,10 @@ var SHEET_CONTACTS = 'Contacts';
 var SHEET_SERVICES = 'Services';
 var SHEET_DISCOUNTS = 'Discounts';
 var SHEET_CALENDAR = 'Calendar';
+var SHEET_BOOKINGS = 'Bookings';
+var SHEET_TARGETS = 'Targets';
+var SHEET_MASTER_APPTS = 'MasterAppointments';
+var SHEET_PRESET_NOTES = 'PresetNotes';
 var UPLOAD_FOLDER_NAME = 'Clinic Issue Log Uploads';
 var SPREADSHEET_NAME = 'Clinic Issue Log';
 
@@ -29,6 +33,10 @@ var CONTACTS_HEADERS = ['Type', 'Name', 'Email', 'Phone', 'Role', 'Team', 'SortO
 var SERVICES_HEADERS = ['Service', 'Description', 'Price', 'DiscountEligible', 'SortOrder'];
 var DISCOUNTS_HEADERS = ['Code', 'Description', 'DiscountPercent', 'ValidUntil', 'ApplicableServices', 'SortOrder'];
 var CALENDAR_HEADERS = ['Date', 'Time', 'Event', 'Attendees', 'Type', 'SortOrder'];
+var BOOKINGS_HEADERS = ['Timestamp', 'Appointment ID', 'Agent Name', 'Customer Name', 'Phone', 'Status', 'MonthKey'];
+var TARGETS_HEADERS = ['Agent Name', 'Month', 'Target'];
+var MASTER_APPTS_HEADERS = ['Appointment ID', 'Customer Name', 'Phone'];
+var PRESET_NOTES_HEADERS = ['Category', 'Title', 'Note Text', 'Sort Order'];
 
 var COL = {
   TIMESTAMP: 1, EMAIL: 2, ESCALATION: 3, TARGET_SLA: 4, ASSIGNED_TEAM: 5,
@@ -82,7 +90,11 @@ function initDatastore() {
     'Contacts': CONTACTS_HEADERS,
     'Services': SERVICES_HEADERS,
     'Discounts': DISCOUNTS_HEADERS,
-    'Calendar': CALENDAR_HEADERS
+    'Calendar': CALENDAR_HEADERS,
+    'Bookings': BOOKINGS_HEADERS,
+    'Targets': TARGETS_HEADERS,
+    'MasterAppointments': MASTER_APPTS_HEADERS,
+    'PresetNotes': PRESET_NOTES_HEADERS
   };
   
   Object.keys(sheets).forEach(function(name) {
@@ -176,6 +188,53 @@ function seedDefaultData(ss) {
     if (events.length) {
       calendarSheet.getRange(2, 1, events.length, CALENDAR_HEADERS.length).setValues(events);
     }
+  }
+
+  // ---- Targets: default monthly target for every configured agent this month ----
+  var targetsSheet = ss.getSheetByName('Targets');
+  if (targetsSheet && targetsSheet.getLastRow() < 2) {
+    var monthKey = getMonthKey_(new Date());
+    var agentNames = getConfigRows()
+      .filter(function(r) { return r.type === 'Agent'; })
+      .map(function(r) { return r.key1; });
+    var targetRows = [];
+    agentNames.forEach(function(name) {
+      if (name) targetRows.push([name, monthKey, 60]);
+    });
+    if (targetRows.length) {
+      targetsSheet.getRange(2, 1, targetRows.length, TARGETS_HEADERS.length).setValues(targetRows);
+    }
+  }
+
+  // ---- MasterAppointments: sample appointment lookup data ----
+  var masterSheet = ss.getSheetByName('MasterAppointments');
+  if (masterSheet && masterSheet.getLastRow() < 2) {
+    var appts = [
+      ['APT-98765', 'Ravi Kumar', '9876500001'],
+      ['APT-12345', 'Ananya Iyer', '9876500002'],
+      ['APT-22334', 'Sameer Joshi', '9876500003'],
+      ['APT-55667', 'Priya Nair', '9876500004'],
+      ['APT-77889', 'Arjun Mehta', '9876500005']
+    ];
+    masterSheet.getRange(2, 1, appts.length, MASTER_APPTS_HEADERS.length).setValues(appts);
+  }
+
+  // ---- PresetNotes: seed library ----
+  var notesSheet = ss.getSheetByName('PresetNotes');
+  if (notesSheet && notesSheet.getLastRow() < 2) {
+    var notes = [
+      ['Refunds', 'Refund initiated', 'Hi {CustomerName}, your refund of ₹{Amount} has been initiated on our end. It will reflect in your account within 3-5 working days. Koi tension mat lijiye — process ho gaya hai! 🙂', 1],
+      ['Refunds', 'Refund policy explanation', 'Hi {CustomerName}, as per our policy, cancellations made less than 24 hours before the appointment are non-refundable. Aapko full refund tabhi milega jab aap 24 ghante pehle cancel karein. Incase of any exception, please share the details.', 2],
+      ['Delivery', 'Order shipped', 'Good news {CustomerName}! 🐾 Your order #{OrderId} has been shipped and will arrive by {Date}. Tracking link bhej rahe hain — pet supplies delivery on its way!', 3],
+      ['Delivery', 'Delivery delay apology', 'Hi {CustomerName}, we\'re sorry for the delay in your order #{OrderId}. Expected delivery is now {Date}. Hum aapse maafi chahte hain — aapka parcel priority mein dispatch kar diya gaya hai.', 4],
+      ['Order Confirmation', 'Appointment confirmed', 'Hi {CustomerName}, your appointment at Supertails Clinic is CONFIRMED for {Date} with Dr. {DoctorName}. Please reach 10 mins early aur pet ka vaccination card saath laaiye. See you soon! 🐶🐱', 5],
+      ['Order Confirmation', 'Product order confirmed', 'Thank you {CustomerName}! ✅ Your order #{OrderId} of ₹{Amount} is confirmed. Payment successful hai, aur items {Date} tak deliver ho jayenge. Happy shopping for your fur baby!', 6],
+      ['Escalation', 'Escalation acknowledgement', 'Hi {CustomerName}, I completely understand your frustration and I am escalating this to our senior team right away. Aapki problem ko priority di ja rahi hai — you will hear back within {Hours} hours with an update. Reference: {TicketId}.', 7],
+      ['Escalation', 'Manager callback scheduled', 'Hi {CustomerName}, our manager {ManagerName} will call you at {Phone} today between {TimeSlot} to resolve your concern personally. Aapki call schedule ho gayi hai — no need to follow up again.', 8],
+      ['Appointment', 'Reschedule request', 'Hi {CustomerName}, no problem — aapka appointment reschedule kar diya ja raha hai. Please confirm a new slot for {Date} or share 2-3 convenient times and we\'ll lock the best available slot for you and your pet. 🩺', 9],
+      ['Appointment', 'Reminder - day before', 'Gentle reminder 🐾: {CustomerName}, your Supertails Clinic visit is tomorrow at {Time} with Dr. {DoctorName}. Please carry the pet\'s previous records. Reply YES to confirm, or CALL to reschedule.', 10]
+    ];
+    notesSheet.getRange(2, 1, notes.length, PRESET_NOTES_HEADERS.length).setValues(notes);
   }
 }
 
@@ -1327,5 +1386,398 @@ function formatDate(date) {
 function addDays(date, days) {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
+  return result;
+}
+// ============================================================
+// FEATURE 1: BOOKING TRACKER
+// ============================================================
+
+function getMonthKey_(date) {
+  return Utilities.formatDate(date instanceof Date ? date : new Date(date), Session.getScriptTimeZone(), 'yyyy-MM');
+}
+
+function getBookingsSheet_() {
+  var ss = getSpreadsheet_();
+  if (!ss) throw new Error('Cannot access spreadsheet.');
+  var sheet = ss.getSheetByName(SHEET_BOOKINGS);
+  if (!sheet) {
+    sheet = getOrCreateSheet(ss, SHEET_BOOKINGS);
+    ensureHeaders(sheet, BOOKINGS_HEADERS);
+  }
+  return sheet;
+}
+
+function lookupMasterAppointment_(appointmentId) {
+  var result = { customerName: '—', phone: '—' };
+  try {
+    var ss = getSpreadsheet_();
+    var sheet = ss.getSheetByName(SHEET_MASTER_APPTS);
+    if (!sheet || sheet.getLastRow() < 2) return result;
+    var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, MASTER_APPTS_HEADERS.length).getValues();
+    for (var i = 0; i < values.length; i++) {
+      if (String(values[i][0]).trim().toUpperCase() === appointmentId.toUpperCase()) {
+        return {
+          customerName: String(values[i][1] || '').trim() || '—',
+          phone: String(values[i][2] || '').trim() || '—'
+        };
+      }
+    }
+  } catch (e) {
+    Logger.log('lookupMasterAppointment_ error: ' + e.message);
+  }
+  return result;
+}
+
+function isValidAppointmentId_(id) {
+  return /^APT-[A-Z0-9-]{3,}$/i.test(String(id || '').trim());
+}
+
+function logBooking(appointmentId, agentName) {
+  var aptId = String(appointmentId || '').trim().toUpperCase();
+  var agent = String(agentName || '').trim();
+
+  if (!aptId) throw new Error('Invalid Appointment ID');
+  if (!isValidAppointmentId_(aptId)) throw new Error('❌ Invalid Appointment ID');
+  if (!agent) throw new Error('Please select your name.');
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var sheet = getBookingsSheet_();
+    var now = new Date();
+    var monthKey = getMonthKey_(now);
+
+    // Duplicate check across all time
+    if (sheet.getLastRow() > 1) {
+      var existing = sheet.getRange(2, 2, sheet.getLastRow() - 1, 1).getValues();
+      for (var i = 0; i < existing.length; i++) {
+        if (String(existing[i][0]).trim().toUpperCase() === aptId) {
+          throw new Error('⚠️ This booking is already logged');
+        }
+      }
+    }
+
+    var lookup = lookupMasterAppointment_(aptId);
+    var row = [now, aptId, agent, lookup.customerName, lookup.phone, 'Logged', monthKey];
+    sheet.appendRow(row);
+
+    return {
+      success: true,
+      appointmentId: aptId,
+      customerName: lookup.customerName,
+      phone: lookup.phone,
+      timestamp: now.toISOString()
+    };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function readBookings_(agentName) {
+  var sheet = getBookingsSheet_();
+  var out = [];
+  if (sheet.getLastRow() < 2) return out;
+  var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, BOOKINGS_HEADERS.length).getValues();
+  var agentKey = String(agentName || '').trim().toLowerCase();
+  values.forEach(function(r) {
+    var ts = r[0] instanceof Date ? r[0] : new Date(r[0]);
+    if (isNaN(ts.getTime())) return;
+    if (agentKey && String(r[2]).trim().toLowerCase() !== agentKey) return;
+    out.push({
+      timestamp: ts,
+      appointmentId: String(r[1] || '').trim(),
+      agentName: String(r[2] || '').trim(),
+      customerName: String(r[3] || '').trim(),
+      phone: String(r[4] || '').trim(),
+      status: String(r[5] || '').trim(),
+      monthKey: String(r[6] || '').trim() || getMonthKey_(ts)
+    });
+  });
+  return out;
+}
+
+function getMyStats(agentName) {
+  var agent = String(agentName || '').trim();
+  if (!agent) throw new Error('Agent name is required.');
+
+  var bookings = readBookings_(agent);
+  var now = new Date();
+  var todayKey = formatDate(now);
+  var monthKey = getMonthKey_(now);
+
+  var weekStart = addDays(now, -6);
+  weekStart.setHours(0, 0, 0, 0);
+
+  var todayCount = 0, weekCount = 0, mtdCount = 0;
+  bookings.forEach(function(b) {
+    if (b.monthKey === monthKey) mtdCount++;
+    if (formatDate(b.timestamp) === todayKey) todayCount++;
+    if (b.timestamp >= weekStart) weekCount++;
+  });
+
+  // Target from Targets sheet (fallback to current-month default of 60 if missing)
+  var target = 0;
+  try {
+    var ss = getSpreadsheet_();
+    var tSheet = ss.getSheetByName(SHEET_TARGETS);
+    if (tSheet && tSheet.getLastRow() > 1) {
+      var tRows = tSheet.getRange(2, 1, tSheet.getLastRow() - 1, TARGETS_HEADERS.length).getValues();
+      for (var i = 0; i < tRows.length; i++) {
+        if (String(tRows[i][0]).trim().toLowerCase() === agent.toLowerCase() &&
+            String(tRows[i][1]).trim() === monthKey) {
+          target = Number(tRows[i][2]) || 0;
+          break;
+        }
+      }
+    }
+  } catch (e) {
+    Logger.log('Target lookup error: ' + e.message);
+  }
+
+  var percent = target > 0 ? Math.min(100, Math.round((mtdCount / target) * 100)) : 0;
+  var daysInMonth = Number(Utilities.formatDate(now, Session.getScriptTimeZone(), 'd'));
+  var remaining = Math.max(0, target - mtdCount);
+  var daysLeft = Math.max(1, ((new Date(now.getFullYear(), now.getMonth() + 1, 0)).getDate()) - daysInMonth + 1);
+  var dailyPace = remaining > 0 ? Math.round((remaining / daysLeft) * 10) / 10 : 0;
+
+  // Team rank: MTD count per agent this month
+  var allBookings = readBookings_('');
+  var byAgent = {};
+  allBookings.forEach(function(b) {
+    if (b.monthKey !== monthKey) return;
+    var key = b.agentName;
+    if (!byAgent[key]) byAgent[key] = 0;
+    byAgent[key]++;
+  });
+  // Include agents with a target but zero bookings this month
+  try {
+    var ss2 = getSpreadsheet_();
+    var tSheet2 = ss2.getSheetByName(SHEET_TARGETS);
+    if (tSheet2 && tSheet2.getLastRow() > 1) {
+      var trs = tSheet2.getRange(2, 1, tSheet2.getLastRow() - 1, TARGETS_HEADERS.length).getValues();
+      trs.forEach(function(r) {
+        if (String(r[1]).trim() === monthKey && String(r[0]).trim()) {
+          var k = String(r[0]).trim();
+          if (byAgent[k] === undefined) byAgent[k] = 0;
+        }
+      });
+    }
+  } catch (e) {}
+
+  var ranked = Object.keys(byAgent).map(function(name) {
+    return { name: name, count: byAgent[name] };
+  }).sort(function(a, b) { return b.count - a.count; });
+
+  var rankIndex = -1;
+  for (var j = 0; j < ranked.length; j++) {
+    if (ranked[j].name.toLowerCase() === agent.toLowerCase()) { rankIndex = j; break; }
+  }
+
+  return {
+    agentName: agent,
+    monthKey: monthKey,
+    today: todayCount,
+    thisWeek: weekCount,
+    mtd: mtdCount,
+    target: target,
+    percent: percent,
+    remaining: remaining,
+    dailyPace: dailyPace,
+    rank: rankIndex >= 0 ? rankIndex + 1 : null,
+    teamSize: ranked.length
+  };
+}
+
+function getMyRecentBookings(agentName, limit) {
+  var agent = String(agentName || '').trim();
+  var n = Math.max(1, Math.min(50, Number(limit) || 10));
+  var todayKey = formatDate(new Date());
+  var bookings = readBookings_(agent)
+    .filter(function(b) { return formatDate(b.timestamp) === todayKey; })
+    .sort(function(a, b) { return b.timestamp - a.timestamp; })
+    .slice(0, n);
+  return {
+    count: bookings.length,
+    items: bookings.map(function(b) {
+      return {
+        appointmentId: b.appointmentId,
+        customerName: b.customerName,
+        phone: b.phone,
+        timestamp: b.timestamp.toISOString()
+      };
+    })
+  };
+}
+
+function getAllMyBookings(agentName, startDate, endDate, searchTerm) {
+  var agent = String(agentName || '').trim();
+  var term = String(searchTerm || '').trim().toLowerCase();
+  var start = startDate ? new Date(startDate) : null;
+  if (start) start.setHours(0, 0, 0, 0);
+  var end = endDate ? new Date(endDate) : null;
+  if (end) end.setHours(23, 59, 59, 999);
+
+  var bookings = readBookings_(agent).filter(function(b) {
+    if (start && b.timestamp < start) return false;
+    if (end && b.timestamp > end) return false;
+    if (term) {
+      var hay = (b.appointmentId + ' ' + b.customerName + ' ' + b.phone).toLowerCase();
+      if (hay.indexOf(term) === -1) return false;
+    }
+    return true;
+  }).sort(function(a, b) { return b.timestamp - a.timestamp; });
+
+  return bookings.map(function(b) {
+    return {
+      timestamp: b.timestamp.toISOString(),
+      appointmentId: b.appointmentId,
+      customerName: b.customerName,
+      phone: b.phone,
+      status: b.status
+    };
+  });
+}
+
+// ============================================================
+// FEATURE 2: PRESET NOTES
+// ============================================================
+
+function getPresetNotes() {
+  try {
+    var ss = getSpreadsheet_();
+    var sheet = ss.getSheetByName(SHEET_PRESET_NOTES);
+    if (!sheet || sheet.getLastRow() < 2) return [];
+    var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, PRESET_NOTES_HEADERS.length).getValues();
+    return values
+      .filter(function(r) { return r && String(r[1] || '').trim() !== ''; })
+      .map(function(r) {
+        return {
+          category: String(r[0] || '').trim(),
+          title: String(r[1] || '').trim(),
+          text: String(r[2] || '').trim(),
+          sortOrder: Number(r[3]) || 0
+        };
+      })
+      .sort(function(a, b) { return a.sortOrder - b.sortOrder; });
+  } catch (e) {
+    Logger.log('getPresetNotes error: ' + e.message);
+    return [];
+  }
+}
+
+// ============================================================
+// FEATURE 3: UNIVERSAL SEARCH (COMMAND PALETTE)
+// ============================================================
+
+function globalSearch(query) {
+  var q = String(query || '').trim();
+  if (!q || q.length < 2) return { tickets: [], bookings: [], notes: [] };
+
+  var raw = q.toLowerCase();
+  var mode = 'all';
+  var term = raw;
+
+  // Prefix filters: @agent, #ticket, >notes, book
+  if (raw.charAt(0) === '@') { mode = 'agent'; term = raw.substring(1).trim(); }
+  else if (raw.charAt(0) === '#') { mode = 'ticket'; term = raw.substring(1).trim(); }
+  else if (raw.charAt(0) === '>') { mode = 'notes'; term = raw.substring(1).trim(); }
+  else if (raw.indexOf('book ') === 0) { mode = 'bookings'; term = raw.substring(5).trim(); }
+
+  // Smart query detection on bare terms
+  var digits = term.replace(/\D/g, '');
+  var detected = null;
+  if (/^\d{5}$/.test(term.trim())) detected = 'ticketId';       // 5-digit → Ticket ID
+  else if (/^\d{10}$/.test(term.trim())) detected = 'phone';    // 10-digit → Phone
+  else if (/^apt[-\s]?\w+$/i.test(term.trim())) detected = 'appointmentId';
+
+  function matches(haystack) {
+    return String(haystack || '').toLowerCase().indexOf(term) !== -1;
+  }
+
+  var result = { tickets: [], bookings: [], notes: [] };
+
+  // ---- Tickets (limit 10) ----
+  if (mode === 'all' || mode === 'agent' || mode === 'ticket' || detected === 'ticketId' || detected === 'phone') {
+    try {
+      var ss = getSpreadsheet_();
+      var sheet = ss.getSheetByName(SHEET_SUBMISSIONS);
+      if (sheet && sheet.getLastRow() > 1) {
+        var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, SUBMISSIONS_HEADERS.length).getValues();
+        var tickets = [];
+        for (var i = values.length - 1; i >= 0 && tickets.length < 10; i--) {
+          var r = values[i];
+          var ticketId = String(r[COL.TICKET_ID - 1] || '').trim();
+          if (!ticketId) continue;
+          var agentName = String(r[COL.AGENT_NAME - 1] || '').trim();
+          var phone = String(r[COL.PHONE - 1] || '').trim();
+          var ok = false;
+          if (mode === 'agent') ok = matches(agentName);
+          else if (mode === 'ticket' || detected === 'ticketId') ok = ticketId.toLowerCase() === term || ticketId.toLowerCase().indexOf(term) === 0;
+          else if (detected === 'phone') ok = phone.replace(/\D/g, '').indexOf(digits) !== -1 || digits.indexOf(phone.replace(/\D/g, '')) !== -1 && phone.length >= 4;
+          else ok = matches(ticketId) || matches(agentName) || matches(phone) || matches(r[COL.ISSUE_SUBTYPE - 1]) || matches(r[COL.DESCRIPTION - 1]) || matches(r[COL.TOOL - 1]);
+          if (!ok) continue;
+          var ts = r[COL.TIMESTAMP - 1];
+          tickets.push({
+            rowIndex: i + 2,
+            ticketId: ticketId,
+            tool: String(r[COL.TOOL - 1] || ''),
+            agentName: agentName,
+            phone: phone,
+            issueSubtype: String(r[COL.ISSUE_SUBTYPE - 1] || ''),
+            description: String(r[COL.DESCRIPTION - 1] || ''),
+            status: String(r[COL.STATUS - 1] || ''),
+            timestamp: ts instanceof Date ? ts.toISOString() : String(ts || '')
+          });
+        }
+        result.tickets = tickets;
+      }
+    } catch (e) { Logger.log('globalSearch tickets error: ' + e.message); }
+  }
+
+  // ---- Bookings (limit 5) ----
+  if (mode === 'all' || mode === 'bookings' || detected === 'appointmentId' || detected === 'phone') {
+    try {
+      var agentFilter = mode === 'agent' ? term : '';
+      var all = readBookings_(agentFilter);
+      var bookings = [];
+      for (var j = all.length - 1; j >= 0 && bookings.length < 5; j--) {
+        var b = all[j];
+        var okB;
+        if (detected === 'appointmentId') {
+          okB = b.appointmentId.toLowerCase().replace(/\s/g, '').indexOf(term.replace(/\s/g, '')) !== -1;
+        } else if (detected === 'phone') {
+          okB = b.phone.replace(/\D/g, '').indexOf(digits) !== -1;
+        } else if (mode === 'agent') {
+          okB = true;
+        } else {
+          okB = matches(b.appointmentId) || matches(b.customerName) || matches(b.phone) || matches(b.agentName);
+        }
+        if (!okB) continue;
+        bookings.push({
+          appointmentId: b.appointmentId,
+          customerName: b.customerName,
+          phone: b.phone,
+          agentName: b.agentName,
+          timestamp: b.timestamp.toISOString()
+        });
+      }
+      result.bookings = bookings;
+    } catch (e) { Logger.log('globalSearch bookings error: ' + e.message); }
+  }
+
+  // ---- Preset Notes (limit 5) ----
+  if (mode === 'all' || mode === 'notes') {
+    try {
+      var notes = getPresetNotes();
+      var found = [];
+      for (var k = 0; k < notes.length && found.length < 5; k++) {
+        if (matches(notes[k].title) || matches(notes[k].text) || matches(notes[k].category)) {
+          found.push({ category: notes[k].category, title: notes[k].title, text: notes[k].text });
+        }
+      }
+      result.notes = found;
+    } catch (e) { Logger.log('globalSearch notes error: ' + e.message); }
+  }
+
   return result;
 }
