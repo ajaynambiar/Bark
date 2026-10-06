@@ -1053,6 +1053,8 @@
         <div id="notesEmpty" style="display:none; text-align:center; color:var(--text-muted); padding:24px 0; font-size:13px;">No notes match your search.</div>
       </div>
     </div>
+
+    </div>
     <div id="page-sla" class="page-content">
       <div class="card">
         <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📈 SLA Dashboard</h2>
@@ -2336,150 +2338,9 @@
   // INITIALIZATION
   // ============================================================
 
-    <!-- ===== PAGE: BOOKING TRACKER (Feature 1) ===== -->
-    <div id="page-bookings" class="page-content">
-      <div class="booking-grid">
-        <!-- LEFT: Log a Booking -->
-        <div class="card">
-          <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📝 Log a Booking</h2>
-          <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Paste the Appointment ID and press Enter</p>
-          <div style="margin-bottom:8px;">
-            <label class="field-label">YOUR NAME</label>
-            <select id="bookingAgent" class="input-base" style="margin-top:6px;"><option value="">Select your name...</option></select>
-          </div>
-          <input id="aptIdInput" type="text" class="input-base" placeholder="Paste Appointment ID..." autofocus
-                 style="margin-top:6px; margin-bottom:12px; font-size:20px !important; padding:14px !important; font-family:monospace;" autocomplete="off">
-          <button id="logBookingBtn" style="width:100%; background:var(--color-primary); color:white; font-weight:600; border:none; border-radius:12px; padding:12px; font-size:15px; cursor:pointer;">🎫 Log Booking</button>
-          <div id="bookingFeedback" style="margin-top:12px;"></div>
+  </script>
 
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:20px; margin-bottom:10px;">
-            <h3 style="font-size:15px; font-weight:700; color:var(--text-primary);">Recent Bookings (Today)</h3>
-            <span class="count-pill" id="todayCountPill">0</span>
-          </div>
-          <div id="recentBookingsList"></div>
-          <div id="recentBookingsEmpty" style="font-size:13px; color:var(--text-muted); padding:8px 0;">No bookings yet today</div>
-          <a href="javascript:void(0)" onclick="openAllBookingsModal()" style="display:inline-block; margin-top:10px; color:var(--color-primary); font-weight:600; font-size:13px; text-decoration:none;">View All →</a>
-        </div>
-
-        <!-- RIGHT: My Performance -->
-        <div>
-          <div class="card" style="margin-bottom:16px;">
-            <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📊 My Performance</h2>
-            <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Month-to-date progress</p>
-            <div style="position:relative; width:180px; height:180px; margin:0 auto 16px;">
-              <svg width="180" height="180" viewBox="0 0 180 180">
-                <circle cx="90" cy="90" r="75" fill="none" stroke="var(--border-light)" stroke-width="12"></circle>
-                <circle id="ringProgress" class="ring-progress" cx="90" cy="90" r="75" fill="none" stroke="var(--color-primary)" stroke-width="12"
-                        stroke-linecap="round" transform="rotate(-90 90 90)" stroke-dasharray="471.24" stroke-dashoffset="471.24"></circle>
-              </svg>
-              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div id="ringMtd" style="font-size:36px; font-weight:700; color:var(--text-primary); line-height:1;">0</div>
-                <div id="ringTarget" style="font-size:13px; color:var(--text-secondary);">/ target</div>
-                <div id="ringPercent" style="font-size:14px; font-weight:700; color:var(--color-primary);">0%</div>
-              </div>
-            </div>
-            <div style="border:1px solid var(--border-light); border-radius:12px; padding:4px 14px; margin-bottom:14px;">
-              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border-light); font-size:13px;">
-                <span>📅 Today</span><strong id="statToday">0</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border-light); font-size:13px;">
-                <span>📆 This Week</span><strong id="statWeek">0</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; padding:9px 0; font-size:13px;">
-                <span>📊 Month-to-Date</span><strong id="statMtd">0</strong>
-              </div>
-            </div>
-            <div id="targetCard" class="target-card status-red" style="margin-bottom:14px;">
-              <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">🎯 TARGET</div>
-              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;"><span>Monthly goal</span><strong id="tgtGoal">—</strong></div>
-              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;"><span>Remaining</span><strong id="tgtRemaining">—</strong></div>
-              <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Daily pace needed</span><strong id="tgtPace">—</strong></div>
-            </div>
-            <div class="target-card" style="border-color:var(--border-light);">
-              <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">🏆 Team Rank</div>
-              <div id="rankValue" style="font-size:20px; font-weight:700; color:var(--text-primary);">—</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== PAGE: PRESET NOTES (Feature 2) ===== -->
-    <div id="page-notes" class="page-content">
-      <div class="card">
-        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📋 Preset Notes</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Copy-ready response notes — click a card to copy instantly.</p>
-        <input id="notesSearch" type="text" class="input-base" placeholder="🔍 Search notes..." style="margin-bottom:12px;" autocomplete="off">
-        <div id="noteChips" class="chip-scroll" style="margin-bottom:16px;"></div>
-        <div id="notesGrid" class="notes-grid"></div>
-        <div id="notesEmpty" style="display:none; text-align:center; color:var(--text-muted); padding:24px 0; font-size:13px;">No notes match your search.</div>
-      </div>
-    </div>
-
-    <div id="page-pending" class="page-content">
-      <div class="card">
-        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">⏳ Pending Tickets</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Tickets you've logged that are still open (New or In Progress).</p>
-        <div id="pendingList" style="margin-top:8px;"><p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading...</p></div>
-      </div>
-    </div>
-
-    <div id="page-services" class="page-content">
-      <div class="card">
-        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">🏷️ Services & Discounts</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Current service offerings and available discounts.</p>
-        <h3 style="font-weight:600; font-size:16px; margin-top:16px; margin-bottom:8px;">Services</h3>
-        <div id="servicesList" style="display:grid; grid-template-columns:1fr; gap:8px;"></div>
-        <h3 style="font-weight:600; font-size:16px; margin-top:20px; margin-bottom:8px;">Discount Codes</h3>
-        <div id="discountsList" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
-      </div>
-    </div>
-
-    <div id="page-contacts" class="page-content">
-      <div class="card">
-        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📞 Point of Contacts</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Key contacts for escalation and support.</p>
-        <div id="contactsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:12px;"></div>
-      </div>
-    </div>
-
-    <div id="page-calendar" class="page-content">
-      <div class="card">
-        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📅 Calendar</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Team events, meetings, and important dates.</p>
-        <div id="calendarList" style="display:grid; grid-template-columns:1fr; gap:8px;"></div>
-      </div>
-    </div>
-
-    <div id="page-suggestions" class="page-content">
-      <div class="card">
-        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">💡 Suggestions</h2>
-        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">View and track suggestions from the team.</p>
-        <div id="suggestionsList" style="margin-top:8px;"></div>
-      </div>
-    </div>
-  </main>
-
-  <div id="toast" class="toast">
-    <div id="toastInner" style="background:var(--bg-header); color:white; border-radius:12px; padding:12px 20px; box-shadow:var(--shadow-lg); font-size:13px; font-weight:500;"></div>
-  </div>
-
-  <div id="shortcutsModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; display:none; align-items:center; justify-content:center; padding:16px;">
-    <div style="background:var(--bg-card); border-radius:16px; max-width:400px; width:100%; padding:24px; max-height:80vh; overflow-y:auto;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-        <h2 style="font-weight:700; font-size:18px; color:var(--text-primary);">⌨️ Keyboard Shortcuts</h2>
-        <button id="closeShortcutsModal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✕</button>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Submit form</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">⌘/Ctrl+Enter</span></div>
-        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Clear selection</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">Escape</span></div>
-        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Focus search</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">⌘/Ctrl+F</span></div>
-        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Go to New Issue</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">n</span></div>
-        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span style="color:var(--text-secondary);">Go to Dashboard</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">d</span></div>
-      </div>
-      <button id="closeShortcutsModalBtn" style="width:100%; margin-top:16px; background:var(--color-primary); color:white; font-weight:600; border:none; border-radius:10px; padding:10px; cursor:pointer;">Got it</button>
-    </div>
-  </div>
+  <!-- ===== STRAY-DUPLICATE BLOCK REMOVED (Index-only pages) ===== -->
 
 <script>
   // ============================================================
@@ -3445,6 +3306,12 @@
   // BIND STATIC HANDLERS
   // ============================================================
   function bindStaticHandlers() {
+    // Index-only form bindings — skip entirely on Management page (elements not present)
+    if (!document.getElementById('issueForm')) {
+      bindFeatureHandlers();
+      return;
+    }
+
     var ticketId = document.getElementById('ticketId');
     ticketId.addEventListener('input', function() {
       var start = this.selectionStart;
@@ -4098,6 +3965,7 @@
   function bindCommandPalette() {
     var input = document.getElementById('cmdSearchInput');
     var panel = document.getElementById('cmdSearchPanel');
+    if (!input || !panel) return;
 
     input.addEventListener('input', function() {
       clearTimeout(cmdState.timer);
