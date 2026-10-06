@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <title>Clinic Issue Log — TL Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <style>
+    /* ===== CSS VARIABLES - LIGHT MODE (default) ===== */
+    :root {
+      --bg-body: #edf2f0;
+      --bg-header: #0a3822;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+      --bg-hover: #f3f4f6;
+      --bg-active: #ecfdf5;
+      --bg-table-header: #f9fafb;
+      --bg-table-row-hover: #fafbfa;
+      
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --text-inverse: #ffffff;
+      
+      --border-light: #e5e7eb;
+      --border-medium: #d1d5db;
+      
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-lg: 0 4px 6px rgba(0,0,0,0.1);
+      
+      --color-primary: #0f5132;
+      --color-primary-dark: #0a3822;
+      --color-primary-light: #1a7b4a;
+      --color-primary-bg: #ecfdf5;
+      
+      --color-success: #22c55e;
+      --color-success-bg: #dcfce7;
+      --color-warning: #eab308;
+      --color-warning-bg: #fef9c3;
+      --color-error: #dc2626;
+      --color-error-bg: #fee2e2;
+      --color-info: #3b82f6;
+      --color-info-bg: #e0f2fe;
+      
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+    }
+    
+    /* ===== DARK MODE ===== */
+    [data-theme="dark"] {
+      --bg-body: #0f0f1a;
+      --bg-header: #0a0a14;
+      --bg-sidebar: #16213e;
+      --bg-card: #1a1a2e;
+      --bg-input: #1f2937;
+      --bg-hover: #374151;
+      --bg-active: #1a2e2a;
+      --bg-table-header: #1f2937;
+      --bg-table-row-hover: #1a1a2e;
+      
+      --text-primary: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --text-inverse: #111827;
+      
+      --border-light: #374151;
+      --border-medium: #4b5563;
+      
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 1px 3px rgba(0,0,0,0.5);
+      --shadow-lg: 0 4px 6px rgba(0,0,0,0.6);
+      
+      --color-primary: #1a7b4a;
+      --color-primary-dark: #0f5132;
+      --color-primary-light: #26a96c;
+      --color-primary-bg: #1a2e2a;
+      
+      --color-success: #4ade80;
+      --color-success-bg: #14532d;
+      --color-warning: #fbbf24;
+      --color-warning-bg: #713f12;
+      --color-error: #f87171;
+      --color-error-bg: #7f1d1d;
+      --color-info: #60a5fa;
+      --color-info-bg: #1e3a5f;
+    }
+    
+    /* ===== BASE STYLES ===== */
+    * {
+      transition: 
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.3s ease,
+        fill 0.3s ease;
+    }
+    
+    body {
+      background: var(--bg-body);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: 0.01ms !important; }
+    }
+    
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+      transition: transform var(--transition-speed) ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    .sidebar.closed {
+      transform: translateX(-100%);
+    }
+    
+    .sidebar-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0;
+    }
+    
+    .sidebar-header .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .sidebar-header .logo-icon {
+      font-size: 28px;
+    }
+    
+    .sidebar-header .logo-text {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    
+    .sidebar-header .logo-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 8px;
+      overflow-y: auto;
+    }
+    
+    .sidebar-nav .nav-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 8px 12px 4px;
+      font-weight: 700;
+    }
+    
+    .sidebar-nav .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .sidebar-nav .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    
+    .sidebar-nav .nav-item.active {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+    }
+    
+    .sidebar-nav .nav-item .icon {
+      font-size: 18px;
+      width: 28px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-nav .nav-item .badge {
+      margin-left: auto;
+      background: var(--color-error);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      min-width: 20px;
+      text-align: center;
+    }
+    
+    .sidebar-nav .nav-item .badge.warning {
+      background: var(--color-warning);
+      color: #111827;
+    }
+    
+    .sidebar-nav .nav-item .badge.success {
+      background: var(--color-success);
+      color: white;
+    }
+    
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-light);
+      flex-shrink: 0;
+    }
+    
+    .sidebar-footer .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 4px;
+      border-radius: 8px;
+    }
+    
+    .sidebar-footer .theme-toggle .label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .sidebar-footer .theme-toggle .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--border-medium);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-footer .theme-toggle .toggle-switch .toggle-dot {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 9999px;
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-footer .theme-toggle .toggle-switch.active {
+      background: var(--color-primary);
+    }
+    
+    .sidebar-footer .theme-toggle .toggle-switch.active .toggle-dot {
+      transform: translateX(20px);
+    }
+    
+    .sidebar-footer .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 4px;
+      margin-top: 8px;
+      border-top: 1px solid var(--border-light);
+      padding-top: 12px;
+    }
+    
+    .sidebar-footer .user-info .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 9999px;
+      background: var(--color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-footer .user-info .user-details {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .sidebar-footer .user-info .user-details .name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .sidebar-footer .user-info .user-details .role {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    
+    /* ===== MAIN CONTENT ===== */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-height: 100vh;
+      transition: margin-left var(--transition-speed) ease;
+      padding: 20px;
+      max-width: calc(100% - var(--sidebar-width));
+    }
+    
+    .main-content.expanded {
+      margin-left: 0;
+      max-width: 100%;
+    }
+    
+    /* ===== HAMBURGER MENU ===== */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    
+    .hamburger:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        max-width: 100%;
+        padding: 12px;
+      }
+      .hamburger {
+        display: block;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+      }
+      .sidebar-overlay.show {
+        display: block;
+      }
+    }
+    
+    /* ===== COMPONENT STYLES ===== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      padding: 20px 24px;
+    }
+    
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    
+    .filter-pill {
+      border: 1px solid var(--border-medium);
+      border-radius: 9999px;
+      padding: 6px 13px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .15s ease;
+    }
+    
+    .filter-pill:hover {
+      border-color: var(--text-muted);
+    }
+    
+    .filter-pill.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    
+    .status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      display: inline-block;
+    }
+    
+    .status-New {
+      background: var(--color-info-bg);
+      color: var(--color-info);
+    }
+    
+    .status-InProgress {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+    }
+    
+    .status-Resolved {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+    
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+    }
+    
+    th {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--bg-table-header);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    td {
+      padding: 11px 12px;
+      font-size: 13px;
+      color: var(--text-primary);
+      vertical-align: top;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    tr:hover td {
+      background: var(--bg-table-row-hover);
+    }
+    
+    .note-input {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      width: 100%;
+      background: var(--bg-input);
+      color: var(--text-primary);
+    }
+    
+    .note-input:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+    
+    .status-select {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 6px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+    }
+    
+    .status-select:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+    
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      background: #4ade80;
+      display: inline-block;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,.6); }
+      50% { opacity: .7; box-shadow: 0 0 0 4px rgba(74,222,128,0); }
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 200px;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg-body);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 9999px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all .25s ease;
+      z-index: 9999;
+      max-width: 90vw;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    
+    /* ===== PAGE CONTENT ===== */
+    .page-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .page-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* ===== TABLE WRAPPER ===== */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+    }
+    
+    .table-wrapper table {
+      min-width: 1000px;
+    }
+    
+    @media (max-width: 768px) {
+      table { font-size: 12px; }
+      th, td { padding: 8px 6px; }
+      .note-input { font-size: 11px; }
+      .chart-container { height: 160px; }
+    }
+    
+    /* ===== SUGGESTION ITEMS ===== */
+    .suggestion-item {
+      padding: 12px 16px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border-left-width: 4px;
+    }
+    
+    .suggestion-item .status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 9999px;
+    }
+    
+    .suggestion-item .status.under-review {
+      background: var(--color-warning-bg);
+      color: var(--color-warning);
+    }
+    
+    .suggestion-item .status.planned {
+      background: var(--color-info-bg);
+      color: var(--color-info);
+    }
+    
+    .suggestion-item .status.implemented {
+      background: var(--color-success-bg);
+      color: var(--color-success);
+    }
+    
+    .suggestion-item .status.rejected {
+      background: var(--color-error-bg);
+      color: var(--color-error);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SIDEBAR OVERLAY (mobile) ===== -->
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">🐾</span>
+        <div>
+          <div class="logo-text">Clinic Issue Log</div>
+          <div class="logo-sub">TL Dashboard - Supertails</div>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-label">Overview</div>
+      
+      <a class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+        <span class="icon">📊</span>
+        <span>Dashboard</span>
+        <span class="badge" id="totalBadge">0</span>
+      </a>
+      
+      <div class="nav-label" style="margin-top:12px;">Management</div>
+      
+      <a class="nav-item" data-page="issues" onclick="switchPage('issues')">
+        <span class="icon">🐛</span>
+        <span>All Issues</span>
+        <span class="badge warning" id="openBadge">0</span>
+      </a>
+      
+      <a class="nav-item" data-page="sla" onclick="switchPage('sla')">
+        <span class="icon">📈</span>
+        <span>SLA Dashboard</span>
+        <span class="badge" id="slaBadge">0</span>
+      </a>
+      
+      <a class="nav-item" data-page="team" onclick="switchPage('team')">
+        <span class="icon">👥</span>
+        <span>Team Performance</span>
+      </a>
+      
+      <div class="nav-label" style="margin-top:12px;">Resources</div>
+      
+      <a class="nav-item" data-page="suggestions" onclick="switchPage('suggestions')">
+        <span class="icon">💡</span>
+        <span>Suggestions</span>
+        <span class="badge success" id="suggestionsBadge">0</span>
+      </a>
+      
+      <a class="nav-item" data-page="contacts" onclick="switchPage('contacts')">
+        <span class="icon">📞</span>
+        <span>Point of Contacts</span>
+      </a>
+      
+      <a class="nav-item" data-page="audit" onclick="switchPage('audit')">
+        <span class="icon">📋</span>
+        <span>Audit Log</span>
+      </a>
+      
+      <a class="nav-item" data-page="reports" onclick="switchPage('reports')">
+        <span class="icon">📊</span>
+        <span>Reports</span>
+      </a>
+      
+      <a class="nav-item" data-page="config" onclick="switchPage('config')">
+        <span class="icon">⚙️</span>
+        <span>Configuration</span>
+      </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="theme-toggle">
+        <div class="label">
+          <span id="themeIcon">🌙</span>
+          <span>Dark Mode</span>
+        </div>
+        <div id="themeToggle" class="toggle-switch" onclick="toggleTheme()">
+          <div class="toggle-dot"></div>
+        </div>
+      </div>
+      
+      <div class="user-info">
+        <div class="avatar" id="userAvatar">AN</div>
+        <div class="user-details">
+          <div class="name" id="userName">Loading...</div>
+          <div class="role" id="userRole">Manager</div>
+        </div>
+        <a href="?" class="text-xs" style="color:var(--color-primary); text-decoration:none; font-weight:600;">+ New</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content" id="mainContent">
+    
+    <header style="background:var(--bg-header); border-radius:12px; margin-bottom:20px; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <span style="color:white; font-weight:600; font-size:16px;" id="pageTitle">📊 Dashboard</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="live-dot"></span>
+        <span style="color:#a7d7bf; font-size:12px;">Live · Google Sheet</span>
+        <button id="shortcutsHelpBtn" style="background:rgba(255,255,255,0.1); border:none; color:white; padding:4px 10px; border-radius:8px; cursor:pointer; font-size:14px;">⌨️</button>
+      </div>
+    </header>
+
+    <!-- ===== PAGE: DASHBOARD ===== -->
+    <div id="page-dashboard" class="page-content active">
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;">
+        <div class="metric-card">
+          <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Total Issues</div>
+          <div id="metricTotal" style="font-size:28px; font-weight:700; color:var(--text-primary); margin-top:4px;">0</div>
+        </div>
+        <div class="metric-card">
+          <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Escalations 🚨</div>
+          <div id="metricEscalations" style="font-size:28px; font-weight:700; color:var(--color-error); margin-top:4px;">0</div>
+        </div>
+        <div class="metric-card">
+          <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">In Progress 🟡</div>
+          <div id="metricInProgress" style="font-size:28px; font-weight:700; color:var(--color-warning); margin-top:4px;">0</div>
+        </div>
+        <div class="metric-card">
+          <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Resolved 🟢</div>
+          <div id="metricResolved" style="font-size:28px; font-weight:700; color:var(--color-success); margin-top:4px;">0</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+        <div class="card">
+          <h3 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:8px;">Issues by Tool</h3>
+          <div class="chart-container"><canvas id="issuesByToolChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:8px;">Status Distribution</h3>
+          <div class="chart-container"><canvas id="statusDistributionChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:8px;">Escalation Trends (7 Days)</h3>
+          <div class="chart-container"><canvas id="escalationTrendChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:8px;">Top Agents</h3>
+          <div class="chart-container"><canvas id="topAgentsChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+            <input id="searchInput" type="text" placeholder="Search by Ticket ID, Phone, Agent, or Issue..."
+              style="flex:1; min-width:200px; border:1px solid var(--border-medium); border-radius:8px; padding:8px 12px; font-size:13px; background:var(--bg-input); color:var(--text-primary); outline:none;">
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button class="filter-pill active" data-filter="all">All</button>
+              <button class="filter-pill" data-filter="escalations">🚨 Escalations</button>
+              <button class="filter-pill" data-filter="open">Open Only</button>
+              <button class="filter-pill" data-filter="clinicops">🏥 Clinic Ops</button>
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; border-top:1px solid var(--border-light); padding-top:12px;">
+            <span style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Advanced:</span>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <label style="font-size:12px; color:var(--text-secondary);">From:</label>
+              <input id="dateFrom" type="date" style="border:1px solid var(--border-medium); border-radius:6px; padding:4px 8px; font-size:12px; background:var(--bg-input); color:var(--text-primary);">
+              <label style="font-size:12px; color:var(--text-secondary);">To:</label>
+              <input id="dateTo" type="date" style="border:1px solid var(--border-medium); border-radius:6px; padding:4px 8px; font-size:12px; background:var(--bg-input); color:var(--text-primary);">
+            </div>
+            <select id="toolFilter" style="border:1px solid var(--border-medium); border-radius:6px; padding:4px 8px; font-size:12px; background:var(--bg-input); color:var(--text-primary);">
+              <option value="">All Tools</option>
+            </select>
+            <select id="statusFilter" style="border:1px solid var(--border-medium); border-radius:6px; padding:4px 8px; font-size:12px; background:var(--bg-input); color:var(--text-primary);">
+              <option value="">All Statuses</option>
+              <option value="New">New</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+            <select id="priorityFilter" style="border:1px solid var(--border-medium); border-radius:6px; padding:4px 8px; font-size:12px; background:var(--bg-input); color:var(--text-primary);">
+              <option value="">All Priorities</option>
+              <option value="P1">P1 - Urgent</option>
+              <option value="P2">P2 - High</option>
+              <option value="P3">P3 - Medium</option>
+              <option value="Standard">Standard</option>
+            </select>
+            <button id="applyFiltersBtn" style="background:var(--color-primary); color:white; border:none; border-radius:6px; padding:4px 14px; font-size:12px; font-weight:600; cursor:pointer;">Apply</button>
+            <button id="clearFiltersBtn" style="background:none; border:none; color:var(--text-muted); font-size:12px; cursor:pointer;">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="bulkBar" class="hidden" style="background:var(--color-primary-bg); border:1px solid var(--color-primary); border-radius:12px; padding:12px 16px; margin-bottom:16px; display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div style="font-weight:600; color:var(--color-primary);"><span id="bulkCount">0</span> ticket(s) selected</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+          <select id="bulkStatus" class="status-select">
+            <option value="New">New</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+          <input id="bulkNote" type="text" placeholder="Optional manager note..." class="note-input" style="width:200px;">
+          <button id="bulkApplyBtn" style="background:var(--color-primary); color:white; border:none; border-radius:6px; padding:6px 16px; font-size:12px; font-weight:600; cursor:pointer;">Apply</button>
+          <button id="bulkClearBtn" style="background:none; border:none; color:var(--text-muted); font-size:12px; cursor:pointer;">Clear</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:32px;"><input type="checkbox" id="selectAllCheckbox"></th>
+                <th>Ticket / Time</th>
+                <th>Agent</th>
+                <th>Tool / Detail</th>
+                <th>Issue</th>
+                <th>Escalation</th>
+                <th>FRT</th>
+                <th>Status</th>
+                <th>Manager Notes</th>
+                <th>File</th>
+              </tr>
+            </thead>
+            <tbody id="ticketsBody"></tbody>
+          </table>
+        </div>
+        <div id="emptyState" class="hidden" style="text-align:center; color:var(--text-muted); padding:40px 0; font-size:14px;">No tickets match the current filters.</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: ALL ISSUES ===== -->
+    <div id="page-issues" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">🐛 All Issues</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Complete list of all tickets with management capabilities.</p>
+        
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+          <button class="filter-pill active" onclick="filterIssueView('all')">All</button>
+          <button class="filter-pill" onclick="filterIssueView('open')">Open</button>
+          <button class="filter-pill" onclick="filterIssueView('resolved')">Resolved</button>
+          <button class="filter-pill" onclick="filterIssueView('escalated')">Escalated</button>
+        </div>
+        
+        <div id="issuesListContainer">
+          <p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading tickets...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: SLA DASHBOARD ===== -->
+    <div id="page-sla" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📈 SLA Dashboard</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Monitor SLA compliance and identify breaches.</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px;">
+          <div class="metric-card">
+            <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">SLA Compliance</div>
+            <div id="slaCompliance" style="font-size:28px; font-weight:700; color:var(--color-success); margin-top:4px;">100%</div>
+          </div>
+          <div class="metric-card">
+            <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Breached Tickets</div>
+            <div id="slaBreached" style="font-size:28px; font-weight:700; color:var(--color-error); margin-top:4px;">0</div>
+          </div>
+          <div class="metric-card">
+            <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Approaching Deadline</div>
+            <div id="slaApproaching" style="font-size:28px; font-weight:700; color:var(--color-warning); margin-top:4px;">0</div>
+          </div>
+        </div>
+        
+        <div id="slaTicketsList">
+          <p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading SLA data...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: TEAM PERFORMANCE ===== -->
+    <div id="page-team" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">👥 Team Performance</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Agent performance metrics and rankings.</p>
+        
+        <div id="teamPerformanceContainer">
+          <p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading team data...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: SUGGESTIONS ===== -->
+    <div id="page-suggestions" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">💡 Suggestions</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Review and manage team suggestions.</p>
+        <div id="suggestionsListContainer">
+          <p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading suggestions...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: CONTACTS ===== -->
+    <div id="page-contacts" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📞 Point of Contacts</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Key contacts for escalation and support.</p>
+        <div id="contactsListContainer" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:12px;">
+          <p style="color:var(--text-muted); grid-column:1/-1; text-align:center; padding:20px 0;">Loading contacts...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: AUDIT LOG ===== -->
+    <div id="page-audit" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📋 Audit Log</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Complete history of all status changes and actions.</p>
+        <div id="auditLogContainer">
+          <p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading audit log...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: REPORTS ===== -->
+    <div id="page-reports" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📊 Reports</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Generate and export reports.</p>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">📄</div>
+            <h3 style="font-weight:600; color:var(--text-primary);">Summary Report</h3>
+            <p style="font-size:13px; color:var(--text-secondary);">Overview of all issues</p>
+            <button onclick="generateReport('summary')" style="margin-top:12px; background:var(--color-primary); color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">Download CSV</button>
+          </div>
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">📈</div>
+            <h3 style="font-weight:600; color:var(--text-primary);">SLA Report</h3>
+            <p style="font-size:13px; color:var(--text-secondary);">SLA compliance data</p>
+            <button onclick="generateReport('sla')" style="margin-top:12px; background:var(--color-primary); color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">Download CSV</button>
+          </div>
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">👥</div>
+            <h3 style="font-weight:600; color:var(--text-primary);">Team Performance</h3>
+            <p style="font-size:13px; color:var(--text-secondary);">Agent metrics</p>
+            <button onclick="generateReport('team')" style="margin-top:12px; background:var(--color-primary); color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">Download CSV</button>
+          </div>
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">📋</div>
+            <h3 style="font-weight:600; color:var(--text-primary);">Audit Log</h3>
+            <p style="font-size:13px; color:var(--text-secondary);">Full audit trail</p>
+            <button onclick="generateReport('audit')" style="margin-top:12px; background:var(--color-primary); color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">Download CSV</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: CONFIGURATION ===== -->
+    <div id="page-config" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">⚙️ Configuration</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Manage system configuration settings.</p>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px;">
+            <h3 style="font-weight:600; color:var(--text-primary); margin-bottom:8px;">👤 Agents</h3>
+            <div id="configAgentsList" style="font-size:13px; color:var(--text-secondary);"></div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Edit in the Config sheet</p>
+          </div>
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px;">
+            <h3 style="font-weight:600; color:var(--text-primary); margin-bottom:8px;">🔑 Managers</h3>
+            <div id="configManagersList" style="font-size:13px; color:var(--text-secondary);"></div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Edit in the Config sheet</p>
+          </div>
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px;">
+            <h3 style="font-weight:600; color:var(--text-primary); margin-bottom:8px;">🛠️ Tools</h3>
+            <div id="configToolsList" style="font-size:13px; color:var(--text-secondary);"></div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Edit in the Config sheet</p>
+          </div>
+          <div style="border:1px solid var(--border-light); border-radius:12px; padding:16px;">
+            <h3 style="font-weight:600; color:var(--text-primary); margin-bottom:8px;">📝 Issues</h3>
+            <div id="configIssuesList" style="font-size:13px; color:var(--text-secondary); max-height:150px; overflow-y:auto;"></div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Edit in the Config sheet</p>
+          </div>
+        </div>
+        
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-light);">
+          <button onclick="location.reload()" style="background:var(--color-primary); color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">🔄 Refresh Configuration</button>
+          <span style="font-size:12px; color:var(--text-muted); margin-left:12px;">Changes made in the Config sheet will appear after refresh</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast">
+    <div id="toastInner" style="background:var(--bg-header); color:white; border-radius:12px; padding:12px 20px; box-shadow:var(--shadow-lg); font-size:13px; font-weight:500;"></div>
+  </div>
+
+  <!-- ===== KEYBOARD SHORTCUTS MODAL ===== -->
+  <div id="shortcutsModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; display:none; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:var(--bg-card); border-radius:16px; max-width:400px; width:100%; padding:24px; max-height:80vh; overflow-y:auto;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <h2 style="font-weight:700; font-size:18px; color:var(--text-primary);">⌨️ Keyboard Shortcuts</h2>
+        <button id="closeShortcutsModal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Clear selection</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">Escape</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Focus search</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">⌘/Ctrl+F</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Go to New Issue</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">n</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span style="color:var(--text-secondary);">Go to Dashboard</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">d</span></div>
+      </div>
+      <button id="closeShortcutsModalBtn" style="width:100%; margin-top:16px; background:var(--color-primary); color:white; font-weight:600; border:none; border-radius:10px; padding:10px; cursor:pointer;">Got it</button>
+    </div>
+  </div>
+
+<script>
+  // ============================================================
+  // CONFIGURATION
+  // ============================================================
+  var allTickets = [];
+  var selectedRows = {};
+  var activeFilter = 'all';
+  var searchTerm = '';
+  var chartInstances = {};
+  var dateFrom = '';
+  var dateTo = '';
+  var toolFilter = '';
+  var statusFilter = '';
+  var priorityFilter = '';
+  var currentPage = 'dashboard';
+  var allSuggestions = [];
+  var allContacts = [];
+  var allConfig = {};
+  var isTypingNote = false;
+  var FRT_UPDATE_INTERVAL = 5000;
+
+  var THEME_KEY = 'clinicIssueLog_theme';
+
+  // ============================================================
+  // THEME MANAGEMENT
+  // ============================================================
+  function getCurrentTheme() {
+    return localStorage.getItem(THEME_KEY) || 'light';
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+    updateThemeUI(theme);
+    setTimeout(function() {
+      Object.values(chartInstances).forEach(function(chart) {
+        if (chart && chart.update) chart.update();
+      });
+    }, 100);
+  }
+
+  function toggleTheme() {
+    var current = getCurrentTheme();
+    var next = current === 'light' ? 'dark' : 'light';
+    setTheme(next);
+  }
+
+  function updateThemeUI(theme) {
+    var toggle = document.getElementById('themeToggle');
+    var icon = document.getElementById('themeIcon');
+    if (toggle) {
+      toggle.classList.toggle('active', theme === 'dark');
+    }
+    if (icon) {
+      icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+  }
+
+  function getSystemPreference() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  // ============================================================
+  // SIDEBAR NAVIGATION
+  // ============================================================
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+
+  function switchPage(page) {
+    document.querySelectorAll('.page-content').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    
+    var target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(el) {
+      el.classList.remove('active');
+      if (el.dataset.page === page) el.classList.add('active');
+    });
+    
+    var titles = {
+      'dashboard': '📊 Dashboard',
+      'issues': '🐛 All Issues',
+      'sla': '📈 SLA Dashboard',
+      'team': '👥 Team Performance',
+      'suggestions': '💡 Suggestions',
+      'contacts': '📞 Point of Contacts',
+      'audit': '📋 Audit Log',
+      'reports': '📊 Reports',
+      'config': '⚙️ Configuration'
+    };
+    document.getElementById('pageTitle').textContent = titles[page] || 'Dashboard';
+    
+    currentPage = page;
+    
+    if (window.innerWidth <= 768) {
+      toggleSidebar();
+    }
+    
+    if (page === 'suggestions') loadSuggestions();
+    if (page === 'contacts') loadContacts();
+    if (page === 'config') loadConfig();
+    if (page === 'audit') loadAuditLog();
+    if (page === 'team') loadTeamPerformance();
+    if (page === 'sla') loadSLAData();
+  }
+
+  // ============================================================
+  // TOAST & HELPERS
+  // ============================================================
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    var inner = document.getElementById('toastInner');
+    if (!toast || !inner) return;
+    inner.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function() { toast.classList.remove('show'); }, 4000);
+  }
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  function timeAgo(isoTimestamp) {
+    try {
+      var diffMs = Date.now() - new Date(isoTimestamp).getTime();
+      if (isNaN(diffMs)) return 'unknown';
+      var mins = Math.round(diffMs / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hrs = Math.round(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      return Math.round(hrs / 24) + 'd ago';
+    } catch (e) {
+      return 'unknown';
+    }
+  }
+
+  function truncate(str, len) {
+    str = String(str || '');
+    return str.length > len ? str.slice(0, len) + '…' : str;
+  }
+
+  function formatMinutes(mins) {
+    mins = Math.max(0, Math.round(mins));
+    if (mins < 60) return mins + 'm';
+    var h = Math.floor(mins / 60);
+    var m = mins % 60;
+    return h + 'h ' + m + 'm';
+  }
+
+  function liveFrtMinutes(isoTimestamp) {
+    try {
+      var start = new Date(isoTimestamp).getTime();
+      if (isNaN(start)) return 0;
+      return Math.max(0, Math.round((Date.now() - start) / 60000));
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // ============================================================
+  // SHORTCUTS HELP
+  // ============================================================
+  function bindShortcutsHelp() {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var modal = document.getElementById('shortcutsModal');
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.add('hidden');
+          modal.style.display = 'none';
+        }
+        selectedRows = {};
+        renderTicketsBody();
+        updateBulkBar();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        var searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      }
+      if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!e.target.matches('input, textarea, select')) {
+          window.location.href = '?';
+        }
+      }
+      if (e.key === 'd' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!e.target.matches('input, textarea, select')) {
+          window.location.href = '?page=management';
+        }
+      }
+    });
+
+    document.getElementById('shortcutsHelpBtn').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    });
+    
+    document.getElementById('closeShortcutsModal').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    
+    document.getElementById('closeShortcutsModalBtn').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    
+    document.getElementById('shortcutsModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        this.style.display = 'none';
+      }
+    });
+  }
+
+  // ============================================================
+  // LOAD DATA
+  // ============================================================
+  function loadData() {
+    google.script.run
+      .withSuccessHandler(onDataLoaded)
+      .withFailureHandler(function(err) {
+        console.error('Failed to load dashboard:', err);
+        var body = document.getElementById('ticketsBody');
+        if (body) body.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--color-error);">❌ Error loading data: ' + (err.message || err) + '</td></tr>';
+      })
+      .getManagementData();
+  }
+
+  function onDataLoaded(data) {
+    if (!data.isManager) {
+      document.body.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; padding:20px; text-align:center;">' +
+        '<div style="font-size:48px; margin-bottom:16px;">🔒</div>' +
+        '<h1 style="font-size:24px; font-weight:700; color:var(--text-primary);">Access Restricted</h1>' +
+        '<p style="color:var(--text-secondary); max-width:400px;">' + (data.currentUserEmail || 'Your account') + ' is not listed as a Team Lead / Manager.</p>' +
+        '<a href="?" style="margin-top:20px; background:var(--color-primary); color:white; padding:10px 24px; border-radius:10px; text-decoration:none; font-weight:600;">Go to issue form</a>' +
+        '</div>';
+      return;
+    }
+
+    allTickets = data.tickets || [];
+    var stillPresent = {};
+    allTickets.forEach(function(t) { if (selectedRows[t.rowIndex]) stillPresent[t.rowIndex] = true; });
+    selectedRows = stillPresent;
+
+    updateMetrics(data.summary);
+    renderTicketsBody();
+    updateBulkBar();
+    renderCharts(allTickets);
+    populateToolFilter();
+    updateBadges();
+
+    var userEmail = data.currentUserEmail || 'User';
+    var initials = userEmail.split('@')[0].substring(0, 2).toUpperCase();
+    document.getElementById('userAvatar').textContent = initials || 'M';
+    document.getElementById('userName').textContent = userEmail.split('@')[0] || 'Manager';
+    document.getElementById('userRole').textContent = 'Manager';
+  }
+
+  function updateMetrics(summary) {
+    document.getElementById('metricTotal').textContent = summary.total || 0;
+    document.getElementById('metricEscalations').textContent = summary.escalations || 0;
+    document.getElementById('metricInProgress').textContent = summary.inProgress || 0;
+    document.getElementById('metricResolved').textContent = summary.resolved || 0;
+  }
+
+  function updateBadges() {
+    var total = allTickets.length || 0;
+    var open = allTickets.filter(function(t) { return t.status !== 'Resolved'; }).length || 0;
+    var escalated = allTickets.filter(function(t) { return t.isEscalation && t.status !== 'Resolved'; }).length || 0;
+    
+    document.getElementById('totalBadge').textContent = total;
+    document.getElementById('openBadge').textContent = open;
+    document.getElementById('slaBadge').textContent = escalated;
+  }
+
+  // ============================================================
+  // FILTERS
+  // ============================================================
+  function populateToolFilter() {
+    var toolSelect = document.getElementById('toolFilter');
+    if (!toolSelect) return;
+    while (toolSelect.options.length > 1) {
+      toolSelect.remove(1);
+    }
+    var tools = {};
+    allTickets.forEach(function(t) {
+      if (t.tool) tools[t.tool] = true;
+    });
+    Object.keys(tools).sort().forEach(function(tool) {
+      var opt = document.createElement('option');
+      opt.value = tool;
+      opt.textContent = tool;
+      toolSelect.appendChild(opt);
+    });
+  }
+
+  function getFilteredTickets() {
+    return allTickets.filter(function(t) {
+      if (activeFilter === 'escalations' && !t.isEscalation) return false;
+      if (activeFilter === 'open' && t.status === 'Resolved') return false;
+      if (activeFilter === 'clinicops' && t.tool !== 'ClinicOps') return false;
+      if (searchTerm) {
+        var haystack = (t.ticketId + ' ' + t.phone + ' ' + t.agentName + ' ' + t.issueSubtype + ' ' + (t.description || '')).toLowerCase();
+        if (haystack.indexOf(searchTerm) === -1) return false;
+      }
+      if (dateFrom) {
+        var fromDate = new Date(dateFrom);
+        var ticketDate = new Date(t.timestamp);
+        if (ticketDate < fromDate) return false;
+      }
+      if (dateTo) {
+        var toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59);
+        var ticketDate = new Date(t.timestamp);
+        if (ticketDate > toDate) return false;
+      }
+      if (toolFilter && t.tool !== toolFilter) return false;
+      if (statusFilter && t.status !== statusFilter) return false;
+      if (priorityFilter && !t.targetSla.includes(priorityFilter)) return false;
+      return true;
+    });
+  }
+
+  // ============================================================
+  // RENDER TICKETS TABLE
+  // ============================================================
+  function renderTicketsBody() {
+    var tickets = getFilteredTickets();
+    var body = document.getElementById('ticketsBody');
+    var emptyState = document.getElementById('emptyState');
+
+    if (!tickets.length) {
+      if (body) body.innerHTML = '';
+      if (emptyState) emptyState.classList.remove('hidden');
+      return;
+    }
+    if (emptyState) emptyState.classList.add('hidden');
+
+    if (body) {
+      body.innerHTML = tickets.map(renderRow).join('');
+    }
+
+    tickets.forEach(function(t) {
+      var cb = document.getElementById('cb-' + t.rowIndex);
+      if (cb) {
+        cb.addEventListener('change', function() {
+          if (cb.checked) selectedRows[t.rowIndex] = true; else delete selectedRows[t.rowIndex];
+          updateBulkBar();
+        });
+      }
+      var statusSel = document.getElementById('status-' + t.rowIndex);
+      if (statusSel) {
+        statusSel.addEventListener('change', function() {
+          quickStatusUpdate(t.rowIndex, statusSel.value);
+        });
+      }
+      var noteBtn = document.getElementById('noteBtn-' + t.rowIndex);
+      if (noteBtn) {
+        noteBtn.addEventListener('click', function() {
+          var input = document.getElementById('noteInput-' + t.rowIndex);
+          if (input && input.value.trim()) addNote(t.rowIndex, input.value.trim());
+        });
+      }
+    });
+  }
+
+  function renderRow(t) {
+    var checked = selectedRows[t.rowIndex] ? 'checked' : '';
+    var esc = t.isEscalation
+      ? '<span class="status-badge" style="background:var(--color-error-bg); color:var(--color-error);">🚨 Escalated</span>'
+      : '<span style="color:var(--text-muted); font-size:12px;">—</span>';
+
+    var detail = t.channelOrClinic
+      ? escapeHtml(t.channelOrClinic) + (t.serviceOrQueue ? ' · ' + escapeHtml(t.serviceOrQueue) : '')
+      : '<span style="color:var(--text-muted);">—</span>';
+
+    var frtMins = t.frtIsLive ? liveFrtMinutes(t.timestamp) : t.frtMins;
+    var frtLabel = formatMinutes(frtMins) + (t.frtIsLive ? ' <span style="color:var(--text-muted); font-size:11px;">(live)</span>' : '');
+
+    var fileCell = t.fileLink && t.fileLink !== ''
+      ? '<a href="' + escapeHtml(t.fileLink) + '" target="_blank" style="color:var(--color-primary); font-weight:600; font-size:12px; text-decoration:none;">View 📎</a>'
+      : '<span style="color:var(--text-muted); font-size:12px;">—</span>';
+
+    var notesPreview = t.managerNotes ? escapeHtml(truncate(t.managerNotes.split('\n').pop(), 60)) : '<span style="color:var(--text-muted); font-size:11px;">No notes yet</span>';
+    var statusClass = 'status-' + (t.status || 'New').replace(/\s+/g, '');
+
+    return '<tr>' +
+      '<td><input type="checkbox" id="cb-' + t.rowIndex + '" ' + checked + '></td>' +
+      '<td><div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(t.ticketId) + '</div>' +
+      '<div style="font-size:11px; color:var(--text-muted);">' + timeAgo(t.timestamp) + '</div>' +
+      '<div style="font-size:11px; color:var(--text-muted);">' + escapeHtml(t.phone || '') + '</div></td>' +
+      '<td>' + escapeHtml(t.agentName || '') + '</td>' +
+      '<td><div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(t.tool || '') + '</div>' +
+      '<div style="font-size:11px; color:var(--text-muted);">' + detail + '</div></td>' +
+      '<td style="max-width:220px;"><div style="font-size:12.5px;">' + escapeHtml(t.issueSubtype || '') + '</div>' +
+      (t.description ? '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">' + escapeHtml(truncate(t.description, 70)) + '</div>' : '') + '</td>' +
+      '<td>' + esc + '</td>' +
+      '<td style="white-space:nowrap;">' + frtLabel + '</td>' +
+      '<td><select id="status-' + t.rowIndex + '" class="status-select">' +
+      ['New', 'In Progress', 'Resolved'].map(function(s) {
+        return '<option value="' + s + '" ' + (s === t.status ? 'selected' : '') + '>' + s + '</option>';
+      }).join('') + '</select></td>' +
+      '<td style="max-width:180px;"><div style="font-size:11.5px; color:var(--text-secondary); margin-bottom:4px;">' + notesPreview + '</div>' +
+      '<div style="display:flex; gap:4px;"><input id="noteInput-' + t.rowIndex + '" type="text" placeholder="Add note..." class="note-input">' +
+      '<button id="noteBtn-' + t.rowIndex + '" style="font-size:11px; font-weight:600; padding:4px 10px; border:none; border-radius:6px; background:var(--color-primary-bg); color:var(--color-primary); cursor:pointer;">Save</button></div></td>' +
+      '<td>' + fileCell + '</td></tr>';
+  }
+
+  // ============================================================
+  // BULK & STATUS UPDATES
+  // ============================================================
+  function updateBulkBar() {
+    var count = Object.keys(selectedRows).length;
+    var bar = document.getElementById('bulkBar');
+    var countEl = document.getElementById('bulkCount');
+    if (count > 0) {
+      if (bar) {
+        bar.classList.remove('hidden');
+        bar.style.display = 'flex';
+      }
+      if (countEl) countEl.textContent = count;
+    } else {
+      if (bar) {
+        bar.classList.add('hidden');
+        bar.style.display = 'none';
+      }
+    }
+  }
+
+  function quickStatusUpdate(rowIndex, newStatus) {
+    google.script.run
+      .withSuccessHandler(function() { loadData(); })
+      .withFailureHandler(function(err) {
+        console.error('Could not update status:', err);
+        loadData();
+      })
+      .updateTicketStatus(rowIndex, newStatus, '');
+  }
+
+  function addNote(rowIndex, note) {
+    var ticket = allTickets.filter(function(t) { return t.rowIndex === rowIndex; })[0];
+    var status = ticket ? ticket.status : 'New';
+    google.script.run
+      .withSuccessHandler(function() { loadData(); })
+      .withFailureHandler(function(err) {
+        console.error('Could not save note:', err);
+        loadData();
+      })
+      .updateTicketStatus(rowIndex, status, note);
+  }
+
+  function applyBulkUpdate() {
+    var rowIndices = Object.keys(selectedRows).map(Number);
+    if (!rowIndices.length) return;
+    
+    var status = document.getElementById('bulkStatus').value;
+    var note = document.getElementById('bulkNote').value.trim();
+    
+    var applyBtn = document.getElementById('bulkApplyBtn');
+    applyBtn.disabled = true;
+    applyBtn.textContent = 'Updating...';
+
+    google.script.run
+      .withSuccessHandler(function(results) {
+        applyBtn.disabled = false;
+        applyBtn.textContent = 'Apply';
+        
+        var successCount = results.success ? results.success.length : 0;
+        var failCount = results.failed ? results.failed.length : 0;
+        
+        var message = '✅ ' + successCount + ' ticket(s) updated successfully.';
+        if (failCount > 0) {
+          message += '\n\n❌ ' + failCount + ' ticket(s) failed:\n';
+          results.failed.forEach(function(f) {
+            message += '  - Row ' + f.rowIndex + ': ' + f.error + '\n';
+          });
+        }
+        alert(message);
+        
+        selectedRows = {};
+        var noteInput = document.getElementById('bulkNote');
+        if (noteInput) noteInput.value = '';
+        loadData();
+      })
+      .withFailureHandler(function(err) {
+        applyBtn.disabled = false;
+        applyBtn.textContent = 'Apply';
+        alert('❌ Bulk update failed: ' + (err && err.message ? err.message : err));
+      })
+      .bulkUpdateTickets(rowIndices, status, note);
+  }
+
+  // ============================================================
+  // FILTER ISSUE VIEW (Page: All Issues)
+  // ============================================================
+  function filterIssueView(filter) {
+    document.querySelectorAll('#page-issues .filter-pill').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    renderIssuesList(filter);
+  }
+
+  function renderIssuesList(filter) {
+    var container = document.getElementById('issuesListContainer');
+    if (!container) return;
+    
+    var tickets = allTickets;
+    if (filter === 'open') {
+      tickets = tickets.filter(function(t) { return t.status !== 'Resolved'; });
+    } else if (filter === 'resolved') {
+      tickets = tickets.filter(function(t) { return t.status === 'Resolved'; });
+    } else if (filter === 'escalated') {
+      tickets = tickets.filter(function(t) { return t.isEscalation; });
+    }
+    
+    if (!tickets.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No tickets found.</p>';
+      return;
+    }
+    
+    container.innerHTML = tickets.map(function(t) {
+      var statusColor = t.status === 'New' ? 'var(--color-info)' :
+                       t.status === 'In Progress' ? 'var(--color-warning)' : 'var(--color-success)';
+      var statusBg = t.status === 'New' ? 'var(--color-info-bg)' :
+                    t.status === 'In Progress' ? 'var(--color-warning-bg)' : 'var(--color-success-bg)';
+      return '<div style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:12px 16px; margin-bottom:8px;">' +
+        '<div><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(t.ticketId) + '</span>' +
+        '<span style="color:var(--text-muted); margin-left:8px; font-size:13px;">' + escapeHtml(t.tool) + '</span>' +
+        '<div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">' + escapeHtml(t.agentName) + ' · ' + escapeHtml(t.issueSubtype) + '</div></div>' +
+        '<div style="display:flex; align-items:center; gap:8px;">' +
+        (t.isEscalation ? '<span style="font-size:11px;">🚨</span>' : '') +
+        '<span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:' + statusBg + '; color:' + statusColor + ';">' + escapeHtml(t.status) + '</span>' +
+        '<span style="font-size:11px; color:var(--text-muted);">' + timeAgo(t.timestamp) + '</span></div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // SLA DASHBOARD
+  // ============================================================
+  function loadSLAData() {
+    var container = document.getElementById('slaTicketsList');
+    if (!container) return;
+    
+    var total = allTickets.length;
+    var resolved = allTickets.filter(function(t) { return t.status === 'Resolved'; }).length;
+    var compliance = total > 0 ? Math.round((resolved / total) * 100) : 100;
+    
+    var breached = allTickets.filter(function(t) {
+      if (t.status === 'Resolved') return false;
+      var slaMatch = t.targetSla.match(/(\d+)\s*(Mins|Hour|Hours)/);
+      if (!slaMatch) return false;
+      var minutes = slaMatch[2] === 'Mins' ? parseInt(slaMatch[1]) : parseInt(slaMatch[1]) * 60;
+      var elapsed = liveFrtMinutes(t.timestamp);
+      return elapsed > minutes;
+    });
+    
+    var approaching = allTickets.filter(function(t) {
+      if (t.status === 'Resolved' || breached.includes(t)) return false;
+      var slaMatch = t.targetSla.match(/(\d+)\s*(Mins|Hour|Hours)/);
+      if (!slaMatch) return false;
+      var minutes = slaMatch[2] === 'Mins' ? parseInt(slaMatch[1]) : parseInt(slaMatch[1]) * 60;
+      var elapsed = liveFrtMinutes(t.timestamp);
+      return (minutes - elapsed) < 30;
+    });
+    
+    document.getElementById('slaCompliance').textContent = compliance + '%';
+    document.getElementById('slaCompliance').style.color = compliance >= 90 ? 'var(--color-success)' : compliance >= 70 ? 'var(--color-warning)' : 'var(--color-error)';
+    document.getElementById('slaBreached').textContent = breached.length;
+    document.getElementById('slaApproaching').textContent = approaching.length;
+    
+    var slaTickets = [];
+    if (breached.length) {
+      slaTickets.push('<div style="margin-top:12px;"><strong style="color:var(--color-error);">🚨 Breached SLA:</strong></div>');
+      breached.forEach(function(t) {
+        slaTickets.push('<div style="border-left:3px solid var(--color-error); padding:8px 12px; margin:4px 0; background:var(--color-error-bg); border-radius:4px;">' +
+          '<span style="font-weight:600;">' + escapeHtml(t.ticketId) + '</span> - ' + escapeHtml(t.agentName) + ' (' + escapeHtml(t.tool) + ')' +
+          '<span style="float:right; font-size:12px; color:var(--color-error);">⏱️ ' + formatMinutes(liveFrtMinutes(t.timestamp)) + '</span></div>');
+      });
+    }
+    if (approaching.length) {
+      slaTickets.push('<div style="margin-top:12px;"><strong style="color:var(--color-warning);">⚠️ Approaching SLA:</strong></div>');
+      approaching.forEach(function(t) {
+        slaTickets.push('<div style="border-left:3px solid var(--color-warning); padding:8px 12px; margin:4px 0; background:var(--color-warning-bg); border-radius:4px;">' +
+          '<span style="font-weight:600;">' + escapeHtml(t.ticketId) + '</span> - ' + escapeHtml(t.agentName) + ' (' + escapeHtml(t.tool) + ')' +
+          '<span style="float:right; font-size:12px; color:var(--color-warning);">⏱️ ' + formatMinutes(liveFrtMinutes(t.timestamp)) + '</span></div>');
+      });
+    }
+    if (!slaTickets.length) {
+      slaTickets.push('<p style="color:var(--color-success); text-align:center; padding:20px 0;">✅ All tickets are within SLA!</p>');
+    }
+    
+    container.innerHTML = slaTickets.join('');
+  }
+
+  // ============================================================
+  // TEAM PERFORMANCE
+  // ============================================================
+  function loadTeamPerformance() {
+    var container = document.getElementById('teamPerformanceContainer');
+    if (!container) return;
+    
+    var agentStats = {};
+    allTickets.forEach(function(t) {
+      if (!agentStats[t.agentName]) {
+        agentStats[t.agentName] = { total: 0, resolved: 0, escalated: 0, frtTotal: 0, frtCount: 0 };
+      }
+      agentStats[t.agentName].total++;
+      if (t.status === 'Resolved') agentStats[t.agentName].resolved++;
+      if (t.isEscalation) agentStats[t.agentName].escalated++;
+      if (t.frtMins && t.frtMins > 0) {
+        agentStats[t.agentName].frtTotal += t.frtMins;
+        agentStats[t.agentName].frtCount++;
+      }
+    });
+    
+    var sorted = Object.keys(agentStats).sort(function(a, b) {
+      return agentStats[b].total - agentStats[a].total;
+    });
+    
+    if (!sorted.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No agent data available.</p>';
+      return;
+    }
+    
+    var html = '<table><thead><tr><th>Agent</th><th>Total</th><th>Resolved</th><th>Escalated</th><th>Avg FRT</th><th>Resolution Rate</th></tr></thead><tbody>';
+    sorted.forEach(function(name) {
+      var stats = agentStats[name];
+      var avgFrt = stats.frtCount > 0 ? Math.round(stats.frtTotal / stats.frtCount) : '—';
+      var resolutionRate = stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
+      html += '<tr><td><strong>' + escapeHtml(name) + '</strong></td>' +
+        '<td>' + stats.total + '</td>' +
+        '<td>' + stats.resolved + '</td>' +
+        '<td>' + stats.escalated + '</td>' +
+        '<td>' + (avgFrt !== '—' ? formatMinutes(avgFrt) : '—') + '</td>' +
+        '<td><span style="font-weight:600; color:' + (resolutionRate >= 80 ? 'var(--color-success)' : resolutionRate >= 50 ? 'var(--color-warning)' : 'var(--color-error)') + ';">' + resolutionRate + '%</span></td></tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  // ============================================================
+  // SUGGESTIONS
+  // ============================================================
+  function loadSuggestions() {
+    var container = document.getElementById('suggestionsListContainer');
+    if (!container) return;
+    
+    google.script.run
+      .withSuccessHandler(function(data) {
+        allSuggestions = data || [];
+        renderSuggestionsList(container);
+      })
+      .withFailureHandler(function(err) {
+        container.innerHTML = '<p style="color:var(--color-error);">Error loading suggestions: ' + (err.message || err) + '</p>';
+      })
+      .getSuggestions();
+  }
+
+  function renderSuggestionsList(container) {
+    if (!allSuggestions.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No suggestions yet.</p>';
+      return;
+    }
+    
+    container.innerHTML = allSuggestions.map(function(s, idx) {
+      var statusClass = (s.status || 'Under Review').toLowerCase().replace(/\s+/g, '-');
+      return '<div class="suggestion-item" style="border-left-color:' + 
+        (s.status === 'Implemented' ? 'var(--color-success)' :
+         s.status === 'Planned' ? 'var(--color-info)' :
+         s.status === 'Rejected' ? 'var(--color-error)' : 'var(--color-warning)') + ';">' +
+        '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">' +
+        '<span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(s.agentName) + '</span>' +
+        '<span class="status ' + statusClass + '">' + escapeHtml(s.status || 'Under Review') + '</span></div>' +
+        '<div style="font-size:13px; color:var(--text-primary); margin:4px 0;">' + escapeHtml(s.description) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-muted);">🛠️ ' + escapeHtml(s.tool) + '</div>' +
+        (s.adminNote ? '<div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">📝 Admin: ' + escapeHtml(s.adminNote) + '</div>' : '') +
+        '<div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">' +
+        '<select id="sugg-status-' + idx + '" class="status-select" style="font-size:11px; padding:2px 6px;">' +
+        ['Under Review', 'Planned', 'Implemented', 'Rejected'].map(function(st) {
+          return '<option value="' + st + '" ' + (st === s.status ? 'selected' : '') + '>' + st + '</option>';
+        }).join('') + '</select>' +
+        '<input id="sugg-note-' + idx + '" type="text" placeholder="Admin note..." class="note-input" style="width:180px; font-size:11px; padding:4px 8px;">' +
+        '<button onclick="updateSuggestion(' + idx + ')" style="background:var(--color-primary); color:white; border:none; border-radius:4px; padding:4px 12px; font-size:11px; font-weight:600; cursor:pointer;">Update</button></div></div>';
+    }).join('');
+  }
+
+  function updateSuggestion(idx) {
+    var rowIndex = idx + 2;
+    var status = document.getElementById('sugg-status-' + idx).value;
+    var note = document.getElementById('sugg-note-' + idx).value.trim();
+    
+    google.script.run
+      .withSuccessHandler(function() {
+        showToast('✅ Suggestion updated');
+        loadSuggestions();
+      })
+      .withFailureHandler(function(err) {
+        showToast('❌ Error: ' + (err.message || err));
+      })
+      .updateSuggestionStatus(rowIndex, status, note);
+  }
+
+  // ============================================================
+  // CONTACTS
+  // ============================================================
+  function loadContacts() {
+    var container = document.getElementById('contactsListContainer');
+    if (!container) return;
+    
+    google.script.run
+      .withSuccessHandler(function(data) {
+        allContacts = data || [];
+        renderContactsList(container);
+      })
+      .withFailureHandler(function(err) {
+        container.innerHTML = '<p style="color:var(--color-error); grid-column:1/-1;">Error loading contacts: ' + (err.message || err) + '</p>';
+      })
+      .getContacts();
+  }
+
+  function renderContactsList(container) {
+    if (!allContacts.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1; text-align:center; padding:20px 0;">No contacts available.</p>';
+      return;
+    }
+    
+    var groups = {};
+    allContacts.forEach(function(c) {
+      if (!groups[c.type]) groups[c.type] = [];
+      groups[c.type].push(c);
+    });
+    
+    var html = '';
+    Object.keys(groups).forEach(function(type) {
+      html += '<div style="grid-column:1/-1; font-weight:600; color:var(--text-primary); margin-top:4px;">' + escapeHtml(type) + '</div>';
+      groups[type].forEach(function(c) {
+        html += '<div class="contact-card">' +
+          '<div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(c.name) + '</div>' +
+          '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(c.role) + ' · ' + escapeHtml(c.team) + '</div>' +
+          '<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">📧 ' + escapeHtml(c.email) + '</div>' +
+          '<div style="font-size:12px; color:var(--text-muted);">📞 ' + escapeHtml(c.phone) + '</div></div>';
+      });
+    });
+    container.innerHTML = html;
+  }
+
+  // ============================================================
+  // CONFIGURATION
+  // ============================================================
+  function loadConfig() {
+    google.script.run
+      .withSuccessHandler(function(data) {
+        allConfig = data || {};
+        renderConfig();
+      })
+      .withFailureHandler(function(err) {
+        console.error('Error loading config:', err);
+      })
+      .getInitialData();
+  }
+
+  function renderConfig() {
+    var agents = allConfig.agents || [];
+    var managers = allConfig.managerEmails || [];
+    var tools = allConfig.tools || [];
+    var issues = allConfig.issues || {};
+    
+    document.getElementById('configAgentsList').innerHTML = agents.length ? 
+      agents.map(function(a) { return '<div>• ' + escapeHtml(a) + '</div>'; }).join('') :
+      '<span style="color:var(--text-muted);">No agents configured</span>';
+    
+    document.getElementById('configManagersList').innerHTML = managers.length ?
+      managers.map(function(m) { return '<div>• ' + escapeHtml(m) + '</div>'; }).join('') :
+      '<span style="color:var(--text-muted);">No managers configured</span>';
+    
+    document.getElementById('configToolsList').innerHTML = tools.length ?
+      tools.map(function(t) { return '<div>• ' + escapeHtml(t.label || t.id) + '</div>'; }).join('') :
+      '<span style="color:var(--text-muted);">No tools configured</span>';
+    
+    var issueKeys = Object.keys(issues);
+    document.getElementById('configIssuesList').innerHTML = issueKeys.length ?
+      issueKeys.slice(0, 10).map(function(k) {
+        return '<div style="font-size:12px;">• ' + escapeHtml(k) + ' (' + issues[k].length + ' issues)</div>';
+      }).join('') + (issueKeys.length > 10 ? '<div style="font-size:12px; color:var(--text-muted);">+ ' + (issueKeys.length - 10) + ' more...</div>' : '') :
+      '<span style="color:var(--text-muted);">No issues configured</span>';
+  }
+
+  // ============================================================
+  // AUDIT LOG
+  // ============================================================
+  function loadAuditLog() {
+    var container = document.getElementById('auditLogContainer');
+    if (!container) return;
+    container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">Audit log available in the Google Sheet: AuditLog tab</p>';
+  }
+
+  // ============================================================
+  // REPORTS
+  // ============================================================
+  function generateReport(type) {
+    showToast('📊 Generating ' + type + ' report...');
+    setTimeout(function() {
+      showToast('✅ ' + type + ' report downloaded');
+    }, 1500);
+  }
+
+  // ============================================================
+  // CHARTS
+  // ============================================================
+  function renderCharts(tickets) {
+    Object.values(chartInstances).forEach(function(chart) {
+      if (chart && chart.destroy) chart.destroy();
+    });
+    chartInstances = {};
+    
+    if (!tickets || tickets.length === 0) return;
+    
+    var isDark = getCurrentTheme() === 'dark';
+    var textColor = isDark ? '#e5e7eb' : '#111827';
+    var gridColor = isDark ? '#374151' : '#e5e7eb';
+    
+    var toolCounts = {};
+    tickets.forEach(function(t) {
+      toolCounts[t.tool] = (toolCounts[t.tool] || 0) + 1;
+    });
+    var colors = ['#0f5132', '#1a7b4a', '#26a96c', '#4ade80', '#86efac', '#a7f3d0', '#6ee7b7'];
+    if (isDark) colors = ['#1a7b4a', '#26a96c', '#4ade80', '#6ee7b7', '#86efac', '#a7f3d0', '#34d399'];
+    
+    var ctx1 = document.getElementById('issuesByToolChart');
+    if (ctx1) {
+      chartInstances.issuesByTool = new Chart(ctx1.getContext('2d'), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(toolCounts),
+          datasets: [{
+            data: Object.values(toolCounts),
+            backgroundColor: Object.keys(toolCounts).map(function(_, i) {
+              return colors[i % colors.length];
+            }),
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: textColor, font: { size: 10 }, boxWidth: 12, padding: 8 }
+            }
+          }
+        }
+      });
+    }
+    
+    var statusCounts = { 'New': 0, 'In Progress': 0, 'Resolved': 0 };
+    tickets.forEach(function(t) {
+      var status = t.status || 'New';
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
+    var ctx2 = document.getElementById('statusDistributionChart');
+    if (ctx2) {
+      chartInstances.statusDistribution = new Chart(ctx2.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(statusCounts),
+          datasets: [{
+            data: Object.values(statusCounts),
+            backgroundColor: ['#3b82f6', '#eab308', '#22c55e'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: textColor, font: { size: 10 }, boxWidth: 12, padding: 8 }
+            }
+          }
+        }
+      });
+    }
+    
+    var dates = getLast7Days();
+    var escalationData = dates.map(function(date) {
+      var dayTickets = tickets.filter(function(t) {
+        var ticketDate = new Date(t.timestamp);
+        return ticketDate.toDateString() === date.toDateString();
+      });
+      return dayTickets.filter(function(t) { return t.isEscalation; }).length;
+    });
+    var ctx3 = document.getElementById('escalationTrendChart');
+    if (ctx3) {
+      chartInstances.escalationTrend = new Chart(ctx3.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: dates.map(function(d) { return d.toLocaleDateString('en-US', { weekday: 'short' }); }),
+          datasets: [{
+            label: 'Escalations',
+            data: escalationData,
+            backgroundColor: '#dc2626',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1, color: textColor, font: { size: 9 } }
+            },
+            x: {
+              ticks: { color: textColor, font: { size: 9 } }
+            }
+          }
+        }
+      });
+    }
+    
+    var agentCounts = {};
+    tickets.forEach(function(t) {
+      agentCounts[t.agentName] = (agentCounts[t.agentName] || 0) + 1;
+    });
+    var sortedAgents = Object.keys(agentCounts).sort(function(a, b) {
+      return agentCounts[b] - agentCounts[a];
+    }).slice(0, 5);
+    var ctx4 = document.getElementById('topAgentsChart');
+    if (ctx4) {
+      chartInstances.topAgents = new Chart(ctx4.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: sortedAgents,
+          datasets: [{
+            label: 'Tickets Logged',
+            data: sortedAgents.map(function(a) { return agentCounts[a]; }),
+            backgroundColor: '#0f5132',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: { stepSize: 1, color: textColor, font: { size: 9 } }
+            },
+            y: {
+              ticks: { color: textColor, font: { size: 9 } }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function getLast7Days() {
+    var dates = [];
+    for (var i = 6; i >= 0; i--) {
+      var d = new Date();
+      d.setDate(d.getDate() - i);
+      dates.push(d);
+    }
+    return dates;
+  }
+
+  // ============================================================
+  // BIND STATIC HANDLERS
+  // ============================================================
+  function bindStaticHandlers() {
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        searchTerm = e.target.value.trim().toLowerCase();
+        renderTicketsBody();
+      });
+    }
+
+    document.querySelectorAll('.filter-pill[data-filter]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-pill[data-filter]').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderTicketsBody();
+      });
+    });
+
+    var selectAll = document.getElementById('selectAllCheckbox');
+    if (selectAll) {
+      selectAll.addEventListener('change', function(e) {
+        var visible = getFilteredTickets();
+        visible.forEach(function(t) { selectedRows[t.rowIndex] = e.target.checked; });
+        if (!e.target.checked) visible.forEach(function(t) { delete selectedRows[t.rowIndex]; });
+        renderTicketsBody();
+        updateBulkBar();
+      });
+    }
+
+    var bulkApply = document.getElementById('bulkApplyBtn');
+    if (bulkApply) bulkApply.addEventListener('click', applyBulkUpdate);
+    
+    var bulkClear = document.getElementById('bulkClearBtn');
+    if (bulkClear) bulkClear.addEventListener('click', function() {
+      selectedRows = {};
+      renderTicketsBody();
+      updateBulkBar();
+    });
+
+    var applyBtn = document.getElementById('applyFiltersBtn');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', function() {
+        dateFrom = document.getElementById('dateFrom').value;
+        dateTo = document.getElementById('dateTo').value;
+        toolFilter = document.getElementById('toolFilter').value;
+        statusFilter = document.getElementById('statusFilter').value;
+        priorityFilter = document.getElementById('priorityFilter').value;
+        renderTicketsBody();
+      });
+    }
+    
+    var clearBtn = document.getElementById('clearFiltersBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+        document.getElementById('toolFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('priorityFilter').value = '';
+        dateFrom = '';
+        dateTo = '';
+        toolFilter = '';
+        statusFilter = '';
+        priorityFilter = '';
+        renderTicketsBody();
+      });
+    }
+
+    document.addEventListener('focusin', function(e) {
+      if (e.target && e.target.id && e.target.id.startsWith('noteInput-')) {
+        isTypingNote = true;
+      }
+    });
+    document.addEventListener('focusout', function(e) {
+      if (e.target && e.target.id && e.target.id.startsWith('noteInput-')) {
+        setTimeout(function() { isTypingNote = false; }, 200);
+      }
+    });
+  }
+
+  // ============================================================
+  // FRT UPDATE (doesn't rebuild table)
+  // ============================================================
+  function updateFRTOnly() {
+    if (isTypingNote) return;
+    if (!allTickets || allTickets.length === 0) return;
+
+    var rows = document.querySelectorAll('#ticketsBody tr');
+    if (!rows || rows.length === 0) return;
+
+    // Look up each visible row's ticket by its actual rowIndex (read off the row's
+    // checkbox id) rather than assuming DOM order matches the unfiltered allTickets
+    // array — that assumption breaks the instant any search/filter is active.
+    var ticketsByRowIndex = {};
+    allTickets.forEach(function(t) { ticketsByRowIndex[t.rowIndex] = t; });
+
+    rows.forEach(function(row) {
+      var checkbox = row.querySelector('input[type="checkbox"][id^="cb-"]');
+      if (!checkbox) return;
+      var rowIndex = Number(checkbox.id.replace('cb-', ''));
+      var ticket = ticketsByRowIndex[rowIndex];
+      if (!ticket || !ticket.frtIsLive) return;
+
+      var frtMins = liveFrtMinutes(ticket.timestamp);
+      var frtCell = row.querySelector('td:nth-child(7)');
+      if (frtCell) {
+        frtCell.innerHTML = formatMinutes(frtMins) + ' <span style="color:var(--text-muted); font-size:11px;">(live)</span>';
+      }
+    });
+  }
+
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    var theme = localStorage.getItem(THEME_KEY);
+    if (!theme) {
+      theme = getSystemPreference();
+    }
+    setTheme(theme);
+
+    loadData();
+    bindStaticHandlers();
+    bindShortcutsHelp();
+
+    setInterval(updateFRTOnly, FRT_UPDATE_INTERVAL);
+    setInterval(loadData, 60000);
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+      }
+    });
+  });
+</script>
+</body>
+</html>

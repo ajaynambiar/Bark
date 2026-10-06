@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <title>Clinic Issue Log</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-body: #edf2f0;
+      --bg-header: #0a3822;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+      --bg-hover: #f3f4f6;
+      --bg-active: #ecfdf5;
+      --bg-table-header: #f9fafb;
+      --bg-table-row-hover: #fafbfa;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border-light: #e5e7eb;
+      --border-medium: #d1d5db;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-lg: 0 4px 6px rgba(0,0,0,0.1);
+      --color-primary: #0f5132;
+      --color-primary-dark: #0a3822;
+      --color-primary-light: #1a7b4a;
+      --color-primary-bg: #ecfdf5;
+      --color-success: #22c55e;
+      --color-success-bg: #dcfce7;
+      --color-warning: #eab308;
+      --color-warning-bg: #fef9c3;
+      --color-error: #dc2626;
+      --color-error-bg: #fee2e2;
+      --color-info: #3b82f6;
+      --color-info-bg: #e0f2fe;
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+    }
+    
+    [data-theme="dark"] {
+      --bg-body: #0f0f1a;
+      --bg-header: #0a0a14;
+      --bg-sidebar: #16213e;
+      --bg-card: #1a1a2e;
+      --bg-input: #1f2937;
+      --bg-hover: #374151;
+      --bg-active: #1a2e2a;
+      --bg-table-header: #1f2937;
+      --bg-table-row-hover: #1a1a2e;
+      --text-primary: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --border-light: #374151;
+      --border-medium: #4b5563;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 1px 3px rgba(0,0,0,0.5);
+      --shadow-lg: 0 4px 6px rgba(0,0,0,0.6);
+      --color-primary: #1a7b4a;
+      --color-primary-dark: #0f5132;
+      --color-primary-light: #26a96c;
+      --color-primary-bg: #1a2e2a;
+      --color-success: #4ade80;
+      --color-success-bg: #14532d;
+      --color-warning: #fbbf24;
+      --color-warning-bg: #713f12;
+      --color-error: #f87171;
+      --color-error-bg: #7f1d1d;
+      --color-info: #60a5fa;
+      --color-info-bg: #1e3a5f;
+    }
+    
+    * {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    }
+    body {
+      background: var(--bg-body);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; } }
+    
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh;
+      background: var(--bg-sidebar); border-right: 1px solid var(--border-light);
+      display: flex; flex-direction: column; z-index: 1000;
+      transition: transform var(--transition-speed) ease; overflow-y: auto; overflow-x: hidden;
+    }
+    .sidebar.closed { transform: translateX(-100%); }
+    .sidebar-header { padding: 16px 20px; border-bottom: 1px solid var(--border-light); flex-shrink: 0; }
+    .sidebar-header .logo { display: flex; align-items: center; gap: 12px; }
+    .sidebar-header .logo-icon { font-size: 28px; }
+    .sidebar-header .logo-text { font-weight: 700; font-size: 18px; color: var(--text-primary); line-height: 1.2; }
+    .sidebar-header .logo-sub { font-size: 11px; color: var(--text-secondary); }
+    .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+    .sidebar-nav .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 8px 12px 4px; font-weight: 700; }
+    .sidebar-nav .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; color: var(--text-secondary); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+    .sidebar-nav .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .sidebar-nav .nav-item.active { background: var(--color-primary-bg); color: var(--color-primary); }
+    .sidebar-nav .nav-item .icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-item .badge { margin-left: auto; background: var(--color-error); color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; min-width: 20px; text-align: center; }
+    .sidebar-nav .nav-item .badge.warning { background: var(--color-warning); color: #111827; }
+    .sidebar-nav .nav-item .badge.success { background: var(--color-success); color: white; }
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border-light); flex-shrink: 0; }
+    .sidebar-footer .theme-toggle { display: flex; align-items: center; justify-content: space-between; padding: 8px 4px; border-radius: 8px; }
+    .sidebar-footer .theme-toggle .label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); }
+    .sidebar-footer .theme-toggle .toggle-switch { position: relative; width: 44px; height: 24px; background: var(--border-medium); border-radius: 9999px; cursor: pointer; transition: background 0.3s ease; flex-shrink: 0; }
+    .sidebar-footer .theme-toggle .toggle-switch .toggle-dot { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 9999px; transition: transform 0.3s ease; }
+    .sidebar-footer .theme-toggle .toggle-switch.active { background: var(--color-primary); }
+    .sidebar-footer .theme-toggle .toggle-switch.active .toggle-dot { transform: translateX(20px); }
+    .sidebar-footer .user-info { display: flex; align-items: center; gap: 12px; padding: 8px 4px; margin-top: 8px; border-top: 1px solid var(--border-light); padding-top: 12px; }
+    .sidebar-footer .user-info .avatar { width: 36px; height: 36px; border-radius: 9999px; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+    .sidebar-footer .user-info .user-details { flex: 1; min-width: 0; }
+    .sidebar-footer .user-info .user-details .name { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-footer .user-info .user-details .role { font-size: 11px; color: var(--text-secondary); }
+    .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; transition: margin-left var(--transition-speed) ease; padding: 20px; max-width: calc(100% - var(--sidebar-width)); }
+    .main-content.expanded { margin-left: 0; max-width: 100%; }
+    .hamburger { display: none; background: none; border: none; font-size: 24px; color: white; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+    .hamburger:hover { background: rgba(255,255,255,0.1); }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; max-width: 100%; padding: 12px; }
+      .hamburger { display: block; }
+      .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+      .sidebar-overlay.show { display: block; }
+    }
+    .badge-req { background: var(--color-error-bg); color: var(--color-error); font-size: 10px; font-weight: 700; letter-spacing: .03em; padding: 2px 7px; border-radius: 9999px; text-transform: uppercase; margin-left: 6px; }
+    .field-label { font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--text-secondary); text-transform: uppercase; display: flex; align-items: center; }
+    .tool-card { border: 1px solid var(--border-light); border-radius: 12px; background: var(--bg-card); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 6px; gap: 6px; transition: all .15s ease; text-align: center; color: var(--text-primary); }
+    .tool-card:hover { border-color: var(--text-muted); }
+    .tool-card.selected { border-color: var(--color-primary); background: var(--color-primary-bg); box-shadow: 0 0 0 1px var(--color-primary) inset; }
+    .tool-card .icon { font-size: 22px; line-height: 1; }
+    .tool-card .label { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .pill-btn { border: 1px solid var(--border-medium); border-radius: 9999px; padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--text-secondary); background: var(--bg-card); cursor: pointer; transition: all .15s ease; white-space: nowrap; }
+    .pill-btn:hover { border-color: var(--text-muted); }
+    .pill-btn.selected { border-color: var(--color-primary); background: var(--color-primary-bg); color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary) inset; }
+    .input-base { width: 100%; border: 1px solid var(--border-medium); border-radius: 10px; padding: 9px 12px; font-size: 14px; outline: none; transition: border-color .15s ease; background: var(--bg-input); color: var(--text-primary); }
+    .input-base:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(15,81,50,.12); }
+    .input-base:disabled { background: var(--bg-hover); color: var(--text-muted); cursor: not-allowed; }
+    textarea.input-base { resize: vertical; min-height: 80px; font-family: inherit; }
+    .drop-zone { border: 2px dashed var(--border-medium); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; transition: all .15s ease; background: var(--bg-input); color: var(--text-secondary); }
+    .drop-zone.drag-over { border-color: var(--color-primary); background: var(--color-primary-bg); }
+    .section-divider { border-top: 1px solid var(--border-light); padding-top: 14px; margin-top: 4px; }
+    .ts-control { border-radius: 10px !important; border-color: var(--border-medium) !important; min-height: 38px !important; background: var(--bg-input) !important; color: var(--text-primary) !important; }
+    .ts-dropdown { background: var(--bg-card) !important; border-color: var(--border-light) !important; }
+    .ts-dropdown .option { color: var(--text-primary) !important; }
+    .ts-dropdown .option:hover { background: var(--bg-hover) !important; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-body); }
+    ::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    .card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; box-shadow: var(--shadow-sm); padding: 20px 24px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 9999px; background: #4ade80; display: inline-block; animation: pulse-dot 1.4s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,.6); } 50% { opacity: .7; box-shadow: 0 0 0 4px rgba(74,222,128,0); } }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 9999; max-width: 90vw; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider { position: absolute; cursor: pointer; inset: 0; background: var(--border-medium); transition: .2s; border-radius: 9999px; }
+    .switch .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: .2s; border-radius: 9999px; }
+    .switch input:checked + .slider { background: var(--color-primary); }
+    .switch input:checked + .slider:before { transform: translateX(18px); }
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .page-content { display: none; animation: fadeIn 0.3s ease; }
+    .page-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .suggestion-item { border-left: 3px solid var(--color-primary); padding-left: 12px; }
+    .contact-card { border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; background: var(--bg-card); }
+    .calendar-event { border-left: 3px solid var(--color-info); padding: 10px 14px; background: var(--bg-input); border-radius: 8px; }
+    .discount-tag { background: var(--color-success-bg); color: var(--color-success); padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">🐾</span>
+        <div>
+          <div class="logo-text">Clinic Issue Log</div>
+          <div class="logo-sub">Supertails - Inside Sales</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Main</div>
+      <a class="nav-item active" data-page="issues" onclick="switchPage('issues')">
+        <span class="icon">🐛</span><span>Issues</span>
+        <span class="badge" id="issuesBadge">0</span>
+      </a>
+      <a class="nav-item" data-page="pending" onclick="switchPage('pending')">
+        <span class="icon">⏳</span><span>Pending Tickets</span>
+        <span class="badge warning" id="pendingBadge">0</span>
+      </a>
+      <div class="nav-label" style="margin-top:12px;">Resources</div>
+      <a class="nav-item" data-page="services" onclick="switchPage('services')">
+        <span class="icon">🏷️</span><span>Services & Discounts</span>
+      </a>
+      <a class="nav-item" data-page="contacts" onclick="switchPage('contacts')">
+        <span class="icon">📞</span><span>Point of Contacts</span>
+      </a>
+      <a class="nav-item" data-page="calendar" onclick="switchPage('calendar')">
+        <span class="icon">📅</span><span>Calendar</span>
+      </a>
+      <a class="nav-item" data-page="suggestions" onclick="switchPage('suggestions')">
+        <span class="icon">💡</span><span>Suggestions</span>
+        <span class="badge success" id="suggestionsBadge">0</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="theme-toggle">
+        <div class="label"><span id="themeIcon">🌙</span><span>Dark Mode</span></div>
+        <div id="themeToggle" class="toggle-switch" onclick="toggleTheme()"><div class="toggle-dot"></div></div>
+      </div>
+      <div class="user-info">
+        <div class="avatar" id="userAvatar">AN</div>
+        <div class="user-details">
+          <div class="name" id="userName">Loading...</div>
+          <div class="role" id="userRole">Agent</div>
+        </div>
+        <button onclick="window.location.href='?page=management'" class="text-xs" style="background:none; border:none; cursor:pointer; color:var(--color-primary); font-weight:600;" id="managerLink">📊 TL View</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <header style="background:var(--bg-header); border-radius:12px; margin-bottom:20px; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <span style="color:white; font-weight:600; font-size:16px;" id="pageTitle">🐛 Issues</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="live-dot"></span>
+        <span style="color:#a7d7bf; font-size:12px;">Live · Google Sheet</span>
+        <button id="shortcutsHelpBtn" style="background:rgba(255,255,255,0.1); border:none; color:white; padding:4px 10px; border-radius:8px; cursor:pointer; font-size:14px;">⌨️</button>
+      </div>
+    </header>
+
+    <div id="page-issues" class="page-content active">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">Log a new issue 📝</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Fill the form — Ticket ID and Phone Number are required. Everything saves instantly to the shared Google Sheet.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+          <span style="background:var(--bg-hover); padding:4px 10px; border-radius:6px; font-size:11px; color:var(--text-secondary);">⌘/Ctrl+Enter to submit</span>
+          <span style="background:var(--bg-hover); padding:4px 10px; border-radius:6px; font-size:11px; color:var(--text-secondary);">n → New Issue</span>
+          <span style="background:var(--bg-hover); padding:4px 10px; border-radius:6px; font-size:11px; color:var(--text-secondary);">d → Dashboard</span>
+        </div>
+        <div id="errorBanner" class="hidden" style="background:var(--color-error-bg); color:var(--color-error); padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:13px;"></div>
+        <form id="issueForm">
+          <div style="background:var(--color-error-bg); border:1px solid var(--color-error); border-radius:12px; padding:16px; margin-bottom:16px;">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--color-error); margin-bottom:12px;">• MANDATORY — MUST FILL BOTH BEFORE SUBMITTING</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label class="field-label">TICKET ID <span class="badge-req">Required</span></label>
+                <input id="ticketId" type="text" class="input-base" placeholder="e.g. 2984512" style="margin-top:6px;">
+              </div>
+              <div>
+                <label class="field-label">CUSTOMER PHONE <span class="badge-req">Required</span></label>
+                <input id="phone" type="tel" inputmode="numeric" class="input-base" placeholder="e.g. 9876500000" maxlength="10" style="margin-top:6px;">
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">YOUR NAME <span class="badge-req">Required</span></label>
+            <select id="agentName" class="input-base" style="margin-top:6px;"><option value="">Select your name...</option></select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">WHICH TOOL / AREA HAS THE ISSUE? <span class="badge-req">Required</span></label>
+            <div id="toolGrid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:6px;"></div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:12px; border:1px solid var(--border-light); border-radius:12px; padding:14px; margin-bottom:16px;">
+            <label class="switch" style="margin-top:2px;">
+              <input type="checkbox" id="isEscalation"><span class="slider"></span>
+            </label>
+            <div>
+              <div style="font-weight:600; font-size:14px; color:var(--text-primary);">Is this an Escalation?</div>
+              <div id="slaBanner" style="font-size:12px; font-weight:500; color:var(--text-muted); margin-top:2px;">Select a tool to see SLA target</div>
+            </div>
+          </div>
+          <div id="subFieldsContainer" style="margin-bottom:16px;"></div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">WHAT EXACTLY HAPPENED? <span style="color:var(--text-muted); font-weight:400; text-transform:none; margin-left:4px;">(optional)</span></label>
+            <textarea id="description" rows="3" class="input-base" placeholder="Describe the issue — error message, steps, what you expected vs what happened..." style="margin-top:6px;"></textarea>
+          </div>
+          <div style="margin-bottom:20px;">
+            <label class="field-label" style="margin-bottom:6px;">SCREENSHOT / SCREEN RECORDING <span style="color:var(--text-muted); font-weight:400; text-transform:none; margin-left:4px;">(optional — max 20MB)</span></label>
+            <div id="dropZone" class="drop-zone">
+              <input type="file" id="fileInput" class="hidden" accept="image/*,video/*">
+              <div id="dropZoneEmpty">
+                <div style="font-size:24px; margin-bottom:4px;">📎</div>
+                <div style="font-weight:600; font-size:13px; color:var(--text-primary);">Click to attach or drag &amp; drop here</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Images (PNG, JPG, GIF) · Videos (MP4, WEBM, MOV)</div>
+              </div>
+              <div id="dropZoneFile" class="hidden" style="display:none; align-items:center; justify-content:space-between; gap:8px; background:var(--bg-card); border:1px solid var(--border-light); border-radius:8px; padding:8px 12px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                  <span style="font-size:18px;">🖼️</span>
+                  <span id="fileName" style="font-size:13px; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+                </div>
+                <button type="button" id="removeFileBtn" style="background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; padding:0 4px;">✕</button>
+              </div>
+            </div>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:6px;">Files upload to Google Drive and are linked in the Sheet. Your team lead can view them anytime.</p>
+          </div>
+          <button type="submit" id="submitBtn" style="width:100%; background:var(--color-primary); color:white; font-weight:600; border:none; border-radius:12px; padding:12px; font-size:15px; cursor:pointer; transition:opacity 0.2s;">
+            <span id="submitBtnText">Submit issue →</span>
+          </button>
+        </form>
+      </div>
+      <div class="card" style="margin-top:16px; padding:16px 20px;">
+        <button id="drawerToggle" style="width:100%; display:flex; align-items:center; justify-content:space-between; background:none; border:none; cursor:pointer; color:var(--text-primary); font-size:14px; font-weight:600; padding:4px 0;">
+          <span>📜 My Recent Submissions</span>
+          <span id="drawerChevron" style="color:var(--text-muted); transition:transform 0.3s;">▾</span>
+        </button>
+        <div id="drawerBody" class="hidden" style="padding-top:12px;">
+          <div id="recentList"></div>
+          <div id="recentEmpty" style="font-size:12px; color:var(--text-muted); padding:8px 0;">No submissions yet this session.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-pending" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">⏳ Pending Tickets</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Tickets you've logged that are still open (New or In Progress).</p>
+        <div id="pendingList" style="margin-top:8px;"><p style="color:var(--text-muted); text-align:center; padding:20px 0;">Loading...</p></div>
+      </div>
+    </div>
+
+    <div id="page-services" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">🏷️ Services & Discounts</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Current service offerings and available discounts.</p>
+        <h3 style="font-weight:600; font-size:16px; margin-top:16px; margin-bottom:8px;">Services</h3>
+        <div id="servicesList" style="display:grid; grid-template-columns:1fr; gap:8px;"></div>
+        <h3 style="font-weight:600; font-size:16px; margin-top:20px; margin-bottom:8px;">Discount Codes</h3>
+        <div id="discountsList" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
+      </div>
+    </div>
+
+    <div id="page-contacts" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📞 Point of Contacts</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Key contacts for escalation and support.</p>
+        <div id="contactsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:12px;"></div>
+      </div>
+    </div>
+
+    <div id="page-calendar" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">📅 Calendar</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">Team events, meetings, and important dates.</p>
+        <div id="calendarList" style="display:grid; grid-template-columns:1fr; gap:8px;"></div>
+      </div>
+    </div>
+
+    <div id="page-suggestions" class="page-content">
+      <div class="card">
+        <h2 style="font-size:20px; font-weight:700; margin-bottom:4px;">💡 Suggestions</h2>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom:16px;">View and track suggestions from the team.</p>
+        <div id="suggestionsList" style="margin-top:8px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">
+    <div id="toastInner" style="background:var(--bg-header); color:white; border-radius:12px; padding:12px 20px; box-shadow:var(--shadow-lg); font-size:13px; font-weight:500;"></div>
+  </div>
+
+  <div id="shortcutsModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; display:none; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:var(--bg-card); border-radius:16px; max-width:400px; width:100%; padding:24px; max-height:80vh; overflow-y:auto;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <h2 style="font-weight:700; font-size:18px; color:var(--text-primary);">⌨️ Keyboard Shortcuts</h2>
+        <button id="closeShortcutsModal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Submit form</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">⌘/Ctrl+Enter</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Clear selection</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">Escape</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Focus search</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">⌘/Ctrl+F</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-light);"><span style="color:var(--text-secondary);">Go to New Issue</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">n</span></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span style="color:var(--text-secondary);">Go to Dashboard</span><span style="font-family:monospace; background:var(--bg-hover); padding:2px 8px; border-radius:4px; font-size:12px;">d</span></div>
+      </div>
+      <button id="closeShortcutsModalBtn" style="width:100%; margin-top:16px; background:var(--color-primary); color:white; font-weight:600; border:none; border-radius:10px; padding:10px; cursor:pointer;">Got it</button>
+    </div>
+  </div>
+
+<script>
+  // ============================================================
+  // CONFIGURATION
+  // ============================================================
+  var CONFIG = null;
+  var state = {
+    tool: null,
+    channelOrClinic: null,
+    serviceOrQueue: null,
+    issueSubtype: null,
+    attachment: null
+  };
+  var issueTomSelects = [];
+  var DRAFT_KEY = 'clinicIssueLog_draft';
+  var RECENT_KEY = 'clinicIssueLog_recent';
+  var THEME_KEY = 'clinicIssueLog_theme';
+  var allTickets = [];
+  var allSuggestions = [];
+  var allContacts = [];
+  var allServices = [];
+  var allDiscounts = [];
+  var allCalendarEvents = [];
+
+  // ============================================================
+  // THEME MANAGEMENT
+  // ============================================================
+  function getCurrentTheme() {
+    return localStorage.getItem(THEME_KEY) || 'light';
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+    updateThemeUI(theme);
+  }
+
+  function toggleTheme() {
+    var current = getCurrentTheme();
+    var next = current === 'light' ? 'dark' : 'light';
+    setTheme(next);
+  }
+
+  function updateThemeUI(theme) {
+    var toggle = document.getElementById('themeToggle');
+    var icon = document.getElementById('themeIcon');
+    if (toggle) {
+      toggle.classList.toggle('active', theme === 'dark');
+    }
+    if (icon) {
+      icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+  }
+
+  function getSystemPreference() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  // ============================================================
+  // SIDEBAR NAVIGATION
+  // ============================================================
+  var currentPage = 'issues';
+
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+
+  function switchPage(page) {
+    document.querySelectorAll('.page-content').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    
+    var target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(el) {
+      el.classList.remove('active');
+      if (el.dataset.page === page) el.classList.add('active');
+    });
+    
+    var titles = {
+      'issues': '🐛 Issues',
+      'pending': '⏳ Pending Tickets',
+      'services': '🏷️ Services & Discounts',
+      'contacts': '📞 Point of Contacts',
+      'calendar': '📅 Calendar',
+      'suggestions': '💡 Suggestions'
+    };
+    document.getElementById('pageTitle').textContent = titles[page] || 'Issues';
+    
+    currentPage = page;
+    
+    if (window.innerWidth <= 768) {
+      toggleSidebar();
+    }
+  }
+
+  // ============================================================
+  // TOAST & ERROR HANDLING
+  // ============================================================
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    var inner = document.getElementById('toastInner');
+    if (!toast || !inner) return;
+    inner.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function() { toast.classList.remove('show'); }, 4000);
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('errorBanner');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideError() {
+    var el = document.getElementById('errorBanner');
+    if (el) el.classList.add('hidden');
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, function(m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  function timeAgo(isoTimestamp) {
+    try {
+      var diffMs = Date.now() - new Date(isoTimestamp).getTime();
+      if (isNaN(diffMs)) return 'unknown';
+      var mins = Math.round(diffMs / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hrs = Math.round(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      return Math.round(hrs / 24) + 'd ago';
+    } catch(e) {
+      return 'unknown';
+    }
+  }
+
+  // ============================================================
+  // SHORTCUTS HELP
+  // ============================================================
+  function bindShortcutsHelp() {
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        var submitBtn = document.getElementById('submitBtn');
+        if (submitBtn && !submitBtn.disabled) {
+          e.preventDefault();
+          submitBtn.click();
+        }
+      }
+      if (e.key === 'Escape') {
+        var modal = document.getElementById('shortcutsModal');
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.add('hidden');
+          modal.style.display = 'none';
+        }
+        hideError();
+      }
+      if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!e.target.matches('input, textarea, select')) {
+          switchPage('issues');
+        }
+      }
+      if (e.key === 'd' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!e.target.matches('input, textarea, select')) {
+          window.location.href = '?page=management';
+        }
+      }
+    });
+
+    document.getElementById('shortcutsHelpBtn').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    });
+    
+    document.getElementById('closeShortcutsModal').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    
+    document.getElementById('closeShortcutsModalBtn').addEventListener('click', function() {
+      var modal = document.getElementById('shortcutsModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    });
+    
+    document.getElementById('shortcutsModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        this.style.display = 'none';
+      }
+    });
+  }
+
+  // ============================================================
+  // DRAFT PERSISTENCE
+  // ============================================================
+  function saveDraft() {
+    try {
+      var draft = {
+        ticketId: document.getElementById('ticketId').value || '',
+        phone: document.getElementById('phone').value || '',
+        agentName: document.getElementById('agentName').value || '',
+        tool: state.tool
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch(e) {}
+  }
+
+  function restoreDraft() {
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      var draft = JSON.parse(raw);
+      if (draft.ticketId) document.getElementById('ticketId').value = draft.ticketId;
+      if (draft.phone) document.getElementById('phone').value = draft.phone;
+      if (draft.agentName) document.getElementById('agentName').value = draft.agentName;
+      if (draft.tool) selectTool(draft.tool);
+    } catch(e) {}
+  }
+
+  // ============================================================
+  // RECENT SUBMISSIONS
+  // ============================================================
+  function addToRecent(entry) {
+    try {
+      var list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+      list.unshift(entry);
+      list = list.slice(0, 5);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+      renderRecentList();
+    } catch(e) {}
+  }
+
+  function renderRecentList() {
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch(e) {}
+    var container = document.getElementById('recentList');
+    var empty = document.getElementById('recentEmpty');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!list.length) {
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    list.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'flex items-center justify-between text-[13px] border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2';
+      row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:8px 12px;';
+      row.innerHTML =
+        '<div style="display:flex; align-items:center; gap:8px;"><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(item.ticketId || '') + '</span>' +
+        '<span style="color:var(--text-muted);">·</span><span style="color:var(--text-secondary);">' + escapeHtml(item.tool || '') + '</span></div>' +
+        '<span style="font-size:11px; font-weight:500; padding:2px 10px; border-radius:9999px; background:var(--color-primary-bg); color:var(--color-primary);">Logged</span>';
+      container.appendChild(row);
+    });
+  }
+
+  // ============================================================
+  // ATTACHMENT HANDLING
+  // ============================================================
+  function setupDropZone() {
+    var dropZone = document.getElementById('dropZone');
+    var fileInput = document.getElementById('fileInput');
+    if (!dropZone || !fileInput) return;
+
+    dropZone.addEventListener('click', function(e) {
+      if (e.target.id === 'removeFileBtn') return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+
+    document.addEventListener('paste', function(e) {
+      var items = (e.clipboardData || window.clipboardData).items;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          var blob = items[i].getAsFile();
+          handleFile(blob, 'pasted-screenshot.png');
+          break;
+        }
+      }
+    });
+
+    var removeBtn = document.getElementById('removeFileBtn');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        clearFile();
+      });
+    }
+  }
+
+  function handleFile(file, forcedName) {
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      showError('File is larger than 20MB. Please attach a smaller file.');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function() {
+      state.attachment = {
+        base64: reader.result,
+        mimeType: file.type || 'application/octet-stream',
+        filename: forcedName || file.name || 'attachment'
+      };
+      var fileNameEl = document.getElementById('fileName');
+      if (fileNameEl) fileNameEl.textContent = state.attachment.filename;
+      var dropEmpty = document.getElementById('dropZoneEmpty');
+      var dropFile = document.getElementById('dropZoneFile');
+      if (dropEmpty) dropEmpty.classList.add('hidden');
+      if (dropFile) {
+        dropFile.classList.remove('hidden');
+        dropFile.style.display = 'flex';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearFile() {
+    state.attachment = null;
+    var fileInput = document.getElementById('fileInput');
+    if (fileInput) fileInput.value = '';
+    var dropEmpty = document.getElementById('dropZoneEmpty');
+    var dropFile = document.getElementById('dropZoneFile');
+    if (dropEmpty) dropEmpty.classList.remove('hidden');
+    if (dropFile) {
+      dropFile.classList.add('hidden');
+      dropFile.style.display = 'none';
+    }
+  }
+
+  // ============================================================
+  // TOMSELECT HELPERS
+  // ============================================================
+  function destroyIssueTomSelects() {
+    issueTomSelects.forEach(function(ts) {
+      try { if (ts && ts.destroy) ts.destroy(); } catch(e) {}
+    });
+    issueTomSelects = [];
+  }
+
+  function mountTomSelect(selectEl, placeholder) {
+    if (!selectEl) return null;
+    if (selectEl.tomselect) {
+      try { if (selectEl.tomselect.destroy) selectEl.tomselect.destroy(); } catch(e) {}
+    }
+    try {
+      var ts = new TomSelect(selectEl, {
+        create: false,
+        allowEmptyOption: true,
+        placeholder: placeholder || 'Select...',
+        onChange: function(val) {
+          state.issueSubtype = val || null;
+          saveDraft();
+        }
+      });
+      issueTomSelects.push(ts);
+      return ts;
+    } catch(e) {
+      console.error('Error creating TomSelect:', e);
+      return null;
+    }
+  }
+
+  function issueOptionsHtml(list, placeholder) {
+    var html = '<option value="">' + placeholder + '</option>';
+    (list || []).forEach(function(item) {
+      html += '<option value="' + escapeHtml(item) + '">' + escapeHtml(item) + '</option>';
+    });
+    return html;
+  }
+
+  // ============================================================
+  // TOOL SELECTION
+  // ============================================================
+  function selectTool(toolId) {
+    state.tool = toolId;
+    state.channelOrClinic = null;
+    state.serviceOrQueue = null;
+    state.issueSubtype = null;
+
+    document.querySelectorAll('#toolGrid .tool-card').forEach(function(card) {
+      card.classList.toggle('selected', card.dataset.toolId === toolId);
+    });
+
+    renderSubFields();
+    updateSlaBanner();
+    saveDraft();
+  }
+
+  // ============================================================
+  // SLA BANNER
+  // ============================================================
+  function computeSla(toolId, isEscalation) {
+    if (!toolId) {
+      return { text: 'Select a tool to see SLA target', color: 'var(--text-muted)' };
+    }
+    if (!isEscalation) {
+      return { text: 'Standard logging protocol (Target SLA: 24h)', color: 'var(--text-secondary)' };
+    }
+    if (toolId === 'ClinicOps') {
+      return { text: 'Priority: P1 - Target SLA: 30 Mins', color: '#dc2626' };
+    }
+    if (toolId === 'PawCare' || toolId === 'Ameyo') {
+      return { text: 'Priority: P2 - Target SLA: 1 Hour', color: '#ea580c' };
+    }
+    return { text: 'Priority: P3 - Target SLA: 2 Hours', color: '#ca8a04' };
+  }
+
+  function updateSlaBanner() {
+    var isEscalation = document.getElementById('isEscalation').checked;
+    var sla = computeSla(state.tool, isEscalation);
+    var banner = document.getElementById('slaBanner');
+    banner.textContent = sla.text;
+    banner.style.color = sla.color;
+  }
+
+  // ============================================================
+  // SUB-FIELDS RENDERING
+  // ============================================================
+  function renderSubFields() {
+    destroyIssueTomSelects();
+    var container = document.getElementById('subFieldsContainer');
+    container.innerHTML = '';
+    if (!state.tool || !CONFIG) return;
+
+    try {
+      if (state.tool === 'Nugget' || state.tool === 'Ameyo') {
+        var issues = CONFIG.issues && CONFIG.issues[state.tool] ? CONFIG.issues[state.tool] : [];
+        container.innerHTML = '<div><label class="field-label">WHAT WENT WRONG? <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;">' + issueOptionsHtml(issues, 'Select an issue...') + '</select></div>';
+        mountTomSelect(document.getElementById('issueSelect'), 'Select an issue...');
+        return;
+      }
+
+      if (state.tool === 'PawCare') {
+        var pawCareChannels = CONFIG.channels && CONFIG.channels['PawCare'] ? CONFIG.channels['PawCare'] : [];
+        var opts = '<option value="">Select...</option>';
+        (pawCareChannels || []).forEach(function(c) {
+          opts += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        });
+        container.innerHTML = '<div style="display:flex; flex-direction:column; gap:12px;">' +
+          '<div><label class="field-label">MODULE / FEATURE <span class="badge-req">Required</span></label>' +
+          '<select id="firstLevelSelect" class="input-base" style="margin-top:6px;">' + opts + '</select></div>' +
+          '<div><label class="field-label">ISSUE <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;" disabled>' + issueOptionsHtml([], 'Select above first...') + '</select></div></div>';
+        bindChannelThenIssue('PawCare');
+        return;
+      }
+
+      if (state.tool === 'Ticket') {
+        var ticketChannels = CONFIG.channels && CONFIG.channels['Ticket'] ? CONFIG.channels['Ticket'] : [];
+        var pills = (ticketChannels || []).map(function(c) {
+          return '<button type="button" class="pill-btn" data-channel="' + escapeHtml(c) + '">' + escapeHtml(c) + '</button>';
+        }).join('');
+        container.innerHTML = '<div class="section-divider" style="display:flex; flex-direction:column; gap:12px;">' +
+          '<div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Ticket Details</div>' +
+          '<div><label class="field-label">CHANNEL / QUEUE <span class="badge-req">Required</span></label>' +
+          '<div id="channelPills" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">' + pills + '</div></div>' +
+          '<div><label class="field-label">TICKET ISSUE <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;" disabled>' + issueOptionsHtml([], 'Select channel first...') + '</select></div></div>';
+        bindTicketBlock();
+        return;
+      }
+
+      if (state.tool === 'ClinicOps') {
+        var clinics = CONFIG.clinics || [];
+        var clinicOpts = '<option value="">Select clinic...</option>';
+        (clinics || []).forEach(function(c) {
+          clinicOpts += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        });
+        container.innerHTML = '<div class="section-divider" style="display:flex; flex-direction:column; gap:12px;">' +
+          '<div style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Clinic Operations</div>' +
+          '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">' +
+          '<div><label class="field-label">CLINIC <span class="badge-req">Required</span></label>' +
+          '<select id="clinicSelect" class="input-base" style="margin-top:6px;">' + clinicOpts + '</select></div>' +
+          '<div><label class="field-label">SERVICE <span class="badge-req">Required</span></label>' +
+          '<select id="serviceSelect" class="input-base" style="margin-top:6px;" disabled><option value="">Select clinic first...</option></select></div>' +
+          '<div><label class="field-label">ISSUE <span class="badge-req">Required</span></label>' +
+          '<select id="issueSelect" class="input-base" style="margin-top:6px;" disabled>' + issueOptionsHtml([], 'Select service first...') + '</select></div></div></div>';
+        bindClinicOpsBlock();
+        return;
+      }
+    } catch(e) {
+      console.error('Error rendering subfields:', e);
+      container.innerHTML = '<div style="color:var(--color-error);">Error loading form fields. Please refresh.</div>';
+    }
+  }
+
+  function bindChannelThenIssue(toolId) {
+    var firstSelect = document.getElementById('firstLevelSelect');
+    var issueSelect = document.getElementById('issueSelect');
+    if (!firstSelect || !issueSelect) return;
+
+    var ts = mountTomSelect(issueSelect, 'Select above first...');
+    if (ts) ts.disable();
+
+    firstSelect.addEventListener('change', function() {
+      state.channelOrClinic = firstSelect.value || null;
+      state.issueSubtype = null;
+      var pathKey = toolId + '|' + firstSelect.value;
+      var issues = (CONFIG.issues && CONFIG.issues[pathKey]) ? CONFIG.issues[pathKey] : [];
+      if (ts) {
+        ts.clearOptions();
+        ts.addOption({ value: '', text: 'Select an issue...' });
+        issues.forEach(function(issue) { ts.addOption({ value: issue, text: issue }); });
+        ts.refreshOptions(false);
+        if (firstSelect.value) { ts.enable(); ts.setValue('', true); }
+        else { ts.disable(); }
+      }
+      saveDraft();
+    });
+  }
+
+  function bindTicketBlock() {
+    var issueSelect = document.getElementById('issueSelect');
+    if (!issueSelect) return;
+
+    var ts = mountTomSelect(issueSelect, 'Select channel first...');
+    if (ts) ts.disable();
+
+    document.querySelectorAll('#channelPills .pill-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#channelPills .pill-btn').forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        var channel = btn.dataset.channel;
+        state.channelOrClinic = channel;
+        state.issueSubtype = null;
+
+        var pathKey = 'Ticket|' + channel;
+        var issues = (CONFIG.issues && CONFIG.issues[pathKey]) ? CONFIG.issues[pathKey] : [];
+        if (ts) {
+          ts.clearOptions();
+          ts.addOption({ value: '', text: 'Select an issue...' });
+          issues.forEach(function(issue) { ts.addOption({ value: issue, text: issue }); });
+          ts.refreshOptions(false);
+          ts.enable();
+          ts.setValue('', true);
+        }
+        saveDraft();
+      });
+    });
+  }
+
+  function bindClinicOpsBlock() {
+    var clinicSelect = document.getElementById('clinicSelect');
+    var serviceSelect = document.getElementById('serviceSelect');
+    var issueSelect = document.getElementById('issueSelect');
+    if (!clinicSelect || !serviceSelect || !issueSelect) return;
+
+    var ts = mountTomSelect(issueSelect, 'Select service first...');
+    if (ts) ts.disable();
+
+    var serviceOptions = (CONFIG.services && CONFIG.services['ClinicOps']) ? CONFIG.services['ClinicOps'] : [];
+
+    clinicSelect.addEventListener('change', function() {
+      state.channelOrClinic = clinicSelect.value || null;
+      state.serviceOrQueue = null;
+      state.issueSubtype = null;
+
+      serviceSelect.innerHTML = '<option value="">Select service...</option>';
+      serviceOptions.forEach(function(s) {
+        var opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        serviceSelect.appendChild(opt);
+      });
+      serviceSelect.disabled = !clinicSelect.value;
+
+      if (ts) {
+        ts.clearOptions();
+        ts.addOption({ value: '', text: 'Select service first...' });
+        ts.refreshOptions(false);
+        ts.disable();
+        ts.setValue('', true);
+      }
+      saveDraft();
+    });
+
+    serviceSelect.addEventListener('change', function() {
+      state.serviceOrQueue = serviceSelect.value || null;
+      state.issueSubtype = null;
+      var pathKey = 'ClinicOps|' + serviceSelect.value;
+      var issues = (CONFIG.issues && CONFIG.issues[pathKey]) ? CONFIG.issues[pathKey] : [];
+      if (ts) {
+        ts.clearOptions();
+        ts.addOption({ value: '', text: 'Select an issue...' });
+        issues.forEach(function(issue) { ts.addOption({ value: issue, text: issue }); });
+        ts.refreshOptions(false);
+        if (serviceSelect.value) { ts.enable(); ts.setValue('', true); }
+        else { ts.disable(); }
+      }
+      saveDraft();
+    });
+  }
+
+  // ============================================================
+  // LOAD DATA
+  // ============================================================
+  function loadAllData() {
+    google.script.run
+      .withSuccessHandler(onAllDataLoaded)
+      .withFailureHandler(function(err) {
+        showError('Could not load data: ' + (err && err.message ? err.message : err));
+      })
+      .getAgentDashboardData();
+  }
+
+  function onAllDataLoaded(data) {
+    allTickets = data.tickets || { tickets: [], summary: { total: 0, open: 0, resolved: 0 } };
+    allContacts = data.contacts || [];
+    allServices = data.services || [];
+    allDiscounts = data.discounts || [];
+    allCalendarEvents = data.calendarEvents || [];
+    allSuggestions = data.suggestions || [];
+    
+    updateBadges();
+    renderPendingTickets();
+    renderContacts();
+    renderServices();
+    renderDiscounts();
+    renderCalendar();
+    renderSuggestions();
+    
+    var userEmail = data.userEmail || 'User';
+    var initials = userEmail.split('@')[0].substring(0, 2).toUpperCase();
+    document.getElementById('userAvatar').textContent = initials || 'U';
+    document.getElementById('userName').textContent = userEmail.split('@')[0] || 'User';
+    document.getElementById('userRole').textContent = data.isManager ? 'Manager' : 'Agent';
+    
+    var managerLink = document.getElementById('managerLink');
+    if (managerLink) {
+      managerLink.style.display = data.isManager ? 'inline-block' : 'none';
+    }
+    
+    CONFIG = data.config;
+    populateAgents(data.config.agents);
+    renderToolGrid(data.config.tools);
+    restoreDraft();
+  }
+
+  function updateBadges() {
+    var total = allTickets.summary ? allTickets.summary.total : 0;
+    var open = allTickets.summary ? allTickets.summary.open : 0;
+    
+    document.getElementById('issuesBadge').textContent = total;
+    document.getElementById('pendingBadge').textContent = open;
+    document.getElementById('pendingBadge').style.display = open > 0 ? 'inline' : 'none';
+    
+    var suggCount = allSuggestions.length || 0;
+    document.getElementById('suggestionsBadge').textContent = suggCount;
+  }
+
+  // ============================================================
+  // POPULATE FORM
+  // ============================================================
+  function populateAgents(agents) {
+    var sel = document.getElementById('agentName');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Select your name...</option>';
+    if (!agents || !agents.length) {
+      sel.innerHTML += '<option value="" disabled>No agents configured</option>';
+      return;
+    }
+    agents.forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderToolGrid(tools) {
+    var grid = document.getElementById('toolGrid');
+    grid.innerHTML = '';
+    if (!tools || !tools.length) {
+      grid.innerHTML = '<div style="grid-column:span 5; text-align:center; color:var(--text-muted); padding:16px 0;">No tools configured</div>';
+      return;
+    }
+    tools.forEach(function(tool) {
+      var card = document.createElement('div');
+      card.className = 'tool-card';
+      card.dataset.toolId = tool.id;
+      card.innerHTML = '<div class="icon">' + tool.icon + '</div><div class="label">' + tool.label + '</div>';
+      card.addEventListener('click', function() { selectTool(tool.id); });
+      grid.appendChild(card);
+    });
+  }
+
+  // ============================================================
+  // RENDER PENDING TICKETS
+  // ============================================================
+  function renderPendingTickets() {
+    var container = document.getElementById('pendingList');
+    if (!container) return;
+    
+    var tickets = allTickets.tickets || [];
+    if (!tickets.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">✅ No pending tickets. Great job!</p>';
+      return;
+    }
+    
+    container.innerHTML = tickets.map(function(t) {
+      var statusColor = t.status === 'New' ? 'var(--color-info)' : 'var(--color-warning)';
+      var statusBg = t.status === 'New' ? 'var(--color-info-bg)' : 'var(--color-warning-bg)';
+      return '<div style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:12px 16px;">' +
+        '<div><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(t.ticketId) + '</span>' +
+        '<span style="color:var(--text-muted); margin-left:8px; font-size:13px;">' + escapeHtml(t.tool) + '</span>' +
+        '<div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">' + escapeHtml(t.issueSubtype) + '</div></div>' +
+        '<div style="display:flex; align-items:center; gap:8px;"><span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:' + statusBg + '; color:' + statusColor + ';">' + escapeHtml(t.status) + '</span>' +
+        '<span style="font-size:11px; color:var(--text-muted);">' + timeAgo(t.timestamp) + '</span></div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // RENDER CONTACTS
+  // ============================================================
+  function renderContacts() {
+    var container = document.getElementById('contactsList');
+    if (!container) return;
+    
+    if (!allContacts || !allContacts.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No contacts available.</p>';
+      return;
+    }
+    
+    var groups = {};
+    allContacts.forEach(function(c) {
+      if (!groups[c.type]) groups[c.type] = [];
+      groups[c.type].push(c);
+    });
+    
+    var html = '';
+    Object.keys(groups).forEach(function(type) {
+      html += '<div style="grid-column:1/-1;"><strong style="color:var(--text-primary);">' + escapeHtml(type) + '</strong></div>';
+      groups[type].forEach(function(c) {
+        html += '<div class="contact-card">' +
+          '<div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(c.name) + '</div>' +
+          '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(c.role) + ' · ' + escapeHtml(c.team) + '</div>' +
+          '<div style="font-size:12px; color:var(--text-muted); margin-top:4px;">📧 ' + escapeHtml(c.email) + '</div>' +
+          '<div style="font-size:12px; color:var(--text-muted);">📞 ' + escapeHtml(c.phone) + '</div></div>';
+      });
+    });
+    container.innerHTML = html;
+  }
+
+  // ============================================================
+  // RENDER SERVICES & DISCOUNTS
+  // ============================================================
+  function renderServices() {
+    var container = document.getElementById('servicesList');
+    if (!container) return;
+    
+    if (!allServices || !allServices.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:12px 0;">No services available.</p>';
+      return;
+    }
+    
+    container.innerHTML = allServices.map(function(s) {
+      return '<div style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border-light); border-radius:8px; padding:10px 14px;">' +
+        '<div><strong style="color:var(--text-primary);">' + escapeHtml(s.service) + '</strong>' +
+        '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(s.description) + '</div></div>' +
+        '<div style="text-align:right;"><div style="font-weight:700; color:var(--text-primary);">₹' + escapeHtml(s.price) + '</div>' +
+        (s.discountEligible === 'Yes' ? '<span class="discount-tag">Discount Eligible</span>' : '') + '</div></div>';
+    }).join('');
+  }
+
+  function renderDiscounts() {
+    var container = document.getElementById('discountsList');
+    if (!container) return;
+    
+    if (!allDiscounts || !allDiscounts.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:12px 0;">No discounts available.</p>';
+      return;
+    }
+    
+    container.innerHTML = allDiscounts.map(function(d) {
+      return '<div style="border:1px solid var(--border-light); border-radius:8px; padding:12px 14px; background:var(--color-success-bg);">' +
+        '<div style="font-weight:700; color:var(--color-primary);">' + escapeHtml(d.code) + '</div>' +
+        '<div style="font-size:13px; color:var(--text-primary);">' + escapeHtml(d.description) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">' + escapeHtml(d.discountPercent) + '% off · Valid until ' + escapeHtml(d.validUntil) + '</div>' +
+        '<div style="font-size:11px; color:var(--text-muted);">Applicable: ' + escapeHtml(d.applicableServices) + '</div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // RENDER CALENDAR
+  // ============================================================
+  function renderCalendar() {
+    var container = document.getElementById('calendarList');
+    if (!container) return;
+    
+    if (!allCalendarEvents || !allCalendarEvents.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No upcoming events.</p>';
+      return;
+    }
+    
+    container.innerHTML = allCalendarEvents.map(function(e) {
+      return '<div class="calendar-event" style="display:flex; align-items:center; justify-content:space-between;">' +
+        '<div><div style="font-weight:600; color:var(--text-primary);">' + escapeHtml(e.event) + '</div>' +
+        '<div style="font-size:13px; color:var(--text-secondary);">' + escapeHtml(e.date) + ' at ' + escapeHtml(e.time) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-muted);">👥 ' + escapeHtml(e.attendees) + '</div></div>' +
+        '<span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:var(--color-info-bg); color:var(--color-info);">' + escapeHtml(e.type) + '</span></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // RENDER SUGGESTIONS
+  // ============================================================
+  function renderSuggestions() {
+    var container = document.getElementById('suggestionsList');
+    if (!container) return;
+    
+    if (!allSuggestions || !allSuggestions.length) {
+      container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">No suggestions yet. Be the first to suggest something!</p>';
+      return;
+    }
+    
+    container.innerHTML = allSuggestions.map(function(s) {
+      var statusColor = s.status === 'Implemented' ? 'var(--color-success)' :
+                       s.status === 'Under Review' ? 'var(--color-warning)' :
+                       s.status === 'Planned' ? 'var(--color-info)' : 'var(--text-muted)';
+      var statusBg = s.status === 'Implemented' ? 'var(--color-success-bg)' :
+                    s.status === 'Under Review' ? 'var(--color-warning-bg)' :
+                    s.status === 'Planned' ? 'var(--color-info-bg)' : 'var(--bg-hover)';
+      return '<div class="suggestion-item" style="border-left:3px solid ' + statusColor + '; padding:12px 16px; margin-bottom:8px; border:1px solid var(--border-light); border-radius:8px; border-left-width:4px;">' +
+        '<div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-weight:600; color:var(--text-primary);">' + escapeHtml(s.agentName) + '</span>' +
+        '<span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:' + statusBg + '; color:' + statusColor + ';">' + escapeHtml(s.status) + '</span></div>' +
+        '<div style="font-size:13px; color:var(--text-primary); margin:4px 0;">' + escapeHtml(s.description) + '</div>' +
+        '<div style="font-size:12px; color:var(--text-muted);">🛠️ ' + escapeHtml(s.tool) + '</div>' +
+        (s.adminNote ? '<div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">📝 Admin: ' + escapeHtml(s.adminNote) + '</div>' : '') +
+        '<div style="font-size:11px; color:var(--text-muted); margin-top:4px;">' + (s.timestamp ? timeAgo(s.timestamp) : '') + '</div></div>';
+    }).join('');
+  }
+
+  // ============================================================
+  // SUBMIT FORM
+  // ============================================================
+  function handleSubmit(e) {
+    e.preventDefault();
+    hideError();
+
+    var ticketId = document.getElementById('ticketId').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var agentName = document.getElementById('agentName').value;
+
+    if (!ticketId) return showError('Ticket ID is required.');
+    if (phone.length !== 10) return showError('Customer phone number must be exactly 10 digits.');
+    if (!agentName) return showError('Please select your name.');
+    if (!state.tool) return showError('Please select which tool/area has the issue.');
+    if (['PawCare', 'Ticket', 'ClinicOps'].indexOf(state.tool) !== -1 && !state.channelOrClinic) {
+      return showError('Please complete the required dropdowns for this tool.');
+    }
+    if (state.tool === 'ClinicOps' && !state.serviceOrQueue) {
+      return showError('Please select a Service.');
+    }
+    if (!state.issueSubtype) return showError('Please select an issue.');
+
+    var payload = {
+      ticketId: ticketId,
+      phone: phone,
+      agentName: agentName,
+      tool: state.tool,
+      isEscalation: document.getElementById('isEscalation').checked,
+      channelOrClinic: state.channelOrClinic || '',
+      serviceOrQueue: state.serviceOrQueue || '',
+      issueSubtype: state.issueSubtype,
+      description: document.getElementById('description').value.trim(),
+      attachment: state.attachment
+    };
+
+    setSubmitting(true);
+    google.script.run
+      .withSuccessHandler(function(res) { onSubmitSuccess(res, payload); })
+      .withFailureHandler(function(err) { onSubmitError(err); })
+      .submitIssue(payload);
+  }
+
+  function setSubmitting(isSubmitting) {
+    var btn = document.getElementById('submitBtn');
+    if (!btn) return;
+    btn.disabled = isSubmitting;
+    btn.style.opacity = isSubmitting ? '0.6' : '1';
+    var btnText = document.getElementById('submitBtnText');
+    if (btnText) btnText.textContent = isSubmitting ? 'Submitting...' : 'Submit issue →';
+  }
+
+  function onSubmitSuccess(res, payload) {
+    setSubmitting(false);
+    showToast('✅ Ticket ' + res.ticketId + ' logged — ' + res.slaLabel);
+    addToRecent({ ticketId: payload.ticketId, tool: payload.tool, time: new Date().toISOString() });
+    resetFormAfterSubmit();
+    loadAllData();
+  }
+
+  function onSubmitError(err) {
+    setSubmitting(false);
+    showError('Submission failed: ' + (err && err.message ? err.message : err));
+  }
+
+  function resetFormAfterSubmit() {
+    document.getElementById('ticketId').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('isEscalation').checked = false;
+    clearFile();
+    state.channelOrClinic = null;
+    state.serviceOrQueue = null;
+    state.issueSubtype = null;
+    renderSubFields();
+    updateSlaBanner();
+    saveDraft();
+  }
+
+  // ============================================================
+  // BIND STATIC HANDLERS
+  // ============================================================
+  function bindStaticHandlers() {
+    var ticketId = document.getElementById('ticketId');
+    ticketId.addEventListener('input', function() {
+      var start = this.selectionStart;
+      var beforeCursor = this.value.slice(0, start);
+      var removedBeforeCursor = (beforeCursor.match(/\s/g) || []).length;
+      this.value = this.value.toUpperCase().replace(/\s+/g, '');
+      var newPos = Math.max(0, start - removedBeforeCursor);
+      this.setSelectionRange(newPos, newPos);
+      saveDraft();
+    });
+
+    var phone = document.getElementById('phone');
+    phone.addEventListener('input', function() {
+      phone.value = phone.value.replace(/\D/g, '').slice(0, 10);
+      saveDraft();
+    });
+
+    document.getElementById('agentName').addEventListener('change', saveDraft);
+    document.getElementById('isEscalation').addEventListener('change', updateSlaBanner);
+    document.getElementById('issueForm').addEventListener('submit', handleSubmit);
+
+    document.getElementById('drawerToggle').addEventListener('click', function() {
+      var body = document.getElementById('drawerBody');
+      var chevron = document.getElementById('drawerChevron');
+      var isHidden = body.classList.contains('hidden');
+      body.classList.toggle('hidden');
+      chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    setupDropZone();
+  }
+
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    var theme = localStorage.getItem(THEME_KEY);
+    if (!theme) {
+      theme = getSystemPreference();
+    }
+    setTheme(theme);
+
+    loadAllData();
+    bindStaticHandlers();
+    renderRecentList();
+    bindShortcutsHelp();
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+      }
+    });
+  });
+</script>
+</body>
+</html>
